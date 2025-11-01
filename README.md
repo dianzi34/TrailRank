@@ -1,135 +1,74 @@
-# TrailRank - Hiking Trail Discovery & Tracking Platform
+# TrailRank 🥾
 
-![Java](https://img.shields.io/badge/Java-17+-blue)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.0-green)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-orange)
+A comprehensive hiking trail discovery and tracking platform.
 
-A comprehensive platform for hikers to discover, rate, and track hiking trails while managing their hiking progress and collections.
+## 📖 Overview
 
-## Features
+TrailRank helps outdoor enthusiasts discover trails, track their hiking progress, and plan adventures with offline-friendly guides.
 
-### User Management
-- Registration with email, username, password, profile picture, and bio
-- Secure login/logout functionality
-- User profiles with bio
+## ✨ Features
 
-### Trail Catalog & Search
-- Browse trails with pagination
-- Search trails by name, location, or difficulty
-- Trail detail pages with description and average rating
-- Filter by difficulty (easy, moderate, hard) and scenery (lake, mountain, forest, etc.)
+- **Trail Discovery**: Browse and search trails by difficulty, scenery, and location
+- **Progress Tracking**: Track total distance, earn milestones and badges
+- **Collections**: Maintain "Wish-to-Hike" and "Completed" trail lists
+- **Reviews & Ratings**: Rate trails and share experiences with the community
+- **Offline Access**: Export trail guides as PDFs for use without internet
 
-### Rating & Reviews
-- Rate trails on a 10-point scale
-- Post detailed reviews and comments
-- View community average ratings
-- Edit and delete your own reviews
+## 🛠️ Tech Stack
 
-### Collections
-- "Wish-to-Hike" collection - save trails you want to explore
-- "Completed" collection - track trails you've finished
-- Manage personal collections
-- Check trail collection status
+- **Frontend**: HTML, CSS, JavaScript
+- **Backend**: Java (Spring Boot)
+- **Database**: MySQL
+- **AI Tools**: OpenAI API
 
-### Technical Stack
-- **Backend**: Java 17+, Spring Boot 3.4.4
-- **Database**: MySQL 8.0
-- **ORM**: MyBatis
-- **Security**: Session-based authentication
-- **Frontend**: Thymeleaf templates
-
-## Installation
+## 🚀 Quick Start
 
 ### Prerequisites
-- Java JDK 17+
+- Java 17+
+- Maven 3.6+
 - MySQL 8.0+
-- Maven 3.8+
 
-### Setup Steps
+### Installation
 
-1. Clone the repository or navigate to project directory
-
-2. Database setup:
-   ```bash
-   # Run the SQL script
-   mysql -u root -p < src/main/resources/trailrank_schema.sql
-   ```
-   Or manually create database:
-   ```sql
-   CREATE DATABASE TrailRank;
-   ```
-   Then execute the schema SQL from `src/main/resources/trailrank_schema.sql`
-
-3. Configure application:
-   ```properties
-   # In application.properties
-   spring.datasource.url=jdbc:mysql://localhost:3306/TrailRank
-   spring.datasource.username=your_username
-   spring.datasource.password=your_password
-   ```
-
-4. Build and launch:
-   ```bash
-   mvn clean install
-   mvn spring-boot:run
-   ```
-
-5. Access the platform at: **http://localhost:8082**
-
-## Project Structure
-
-```
-src/main/java/com/example/movierating/
-├── controller/          # REST and page controllers
-│   ├── TrailController      # Trail browsing and details
-│   ├── RatingController     # Rating and review APIs
-│   ├── CollectionController # Collection management APIs
-│   └── UserController       # User authentication
-├── Service/             # Business logic layer
-│   ├── TrailService         # Trail operations
-│   ├── RatingService        # Rating operations
-│   └── CollectionService    # Collection operations
-├── db/
-│   ├── dao/             # Data access objects
-│   ├── mappers/          # MyBatis mappers
-│   └── po/              # Plain objects (entities)
-└── TrailRankApplication.java  # Main application class
-
-src/main/resources/
-├── mappers/            # MyBatis XML mapper files
-├── templates/          # Thymeleaf HTML templates
-└── application.properties  # Configuration
+1. Clone the repository
+```bash
+git clone https://github.com/dianzi34/TrailRank.git
+cd TrailRank
 ```
 
-## API Endpoints
+2. Configure database
+```bash
+mysql -u root -p < src/main/resources/db/schema.sql
+```
 
-### Trails
-- `GET /trails` - Browse trails (paginated)
-- `GET /trails/search?query=...` - Search trails
-- `GET /trails/{id}` - Trail details
-- `POST /trails/addTrail` - Add new trail (admin)
-- `PUT /trails/{trailId}` - Update trail
-- `DELETE /trails/{trailId}` - Delete trail
+3. Update `application.properties` with your database credentials
 
-### Ratings
-- `POST /api/ratings/rate` - Submit/update rating
-- `GET /api/ratings/trail/{trailId}/avg` - Get average rating
-- `GET /api/ratings/trail/{trailId}` - Get all ratings for trail
+4. Run the application
+```bash
+mvn spring-boot:run
+```
 
-### Collections
-- `GET /api/collections/user/{userId}` - Get user collections
-- `POST /api/collections/add` - Add trail to collection
-- `GET /api/collections/user/{userId}/type/{collectionType}` - Get collections by type
-- `DELETE /api/collections/user/{userId}/trail/{trailId}` - Remove from collection
+5. Access at `http://localhost:8080`
 
-## Database Schema
+## 👥 Team & Responsibilities
 
-- **User**: User accounts and profiles
-- **Trail**: Trail information (name, location, difficulty, scenery, distance)
-- **Rating**: User ratings and reviews for trails
-- **Collection**: User collections (Wish-to-Hike, Completed)
+**CS5500 Fall 2025 - Team 11**
 
-See `src/main/resources/trailrank_schema.sql` for complete schema.
+| Member | Responsibilities |
+|--------|-----------------|
+| **Xinyu Li** | User Authentication & Profile Management, Security Implementation |
+| **Hailey Pang** | Trail Catalog & Search Functionality, Database Design |
+| **Xueyan Zhang** | Ratings & Reviews System, Frontend UI/UX |
+| **Yi Zhang** | Collections & Progress Tracking, PDF Export Feature |
 
-## Development Team
-Team 11 - CS5500 2025 Fall Project
+## 📅 Project Timeline
+
+- **Week 1-3**: User Authentication & Profile
+- **Week 4-5**: Trail Catalog & Search
+- **Week 6**: Ratings & Reviews
+- **Week 7**: Collections & Progress Tracking
+- **Week 8**: Integration & Testing
+
+## 📝 License
+
+This project is developed for educational purposes as part of CS5500 coursework.
