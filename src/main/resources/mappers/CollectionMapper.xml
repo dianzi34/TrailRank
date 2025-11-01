@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.movierating.db.mappers.CollectionMapper">
+  <resultMap id="BaseResultMap" type="com.example.movierating.db.po.Collection">
+    <id column="collection_id" jdbcType="INTEGER" property="collectionId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="trail_id" jdbcType="INTEGER" property="trailId" />
+    <result column="collection_type" jdbcType="CHAR" property="collectionType" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    collection_id, user_id, trail_id, collection_type, create_date, update_date
+  </sql>
+
+  <!-- Select by Primary Key -->
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from `Collection`
+    where collection_id = #{collectionId,jdbcType=INTEGER}
+  </select>
+
+  <!-- Insert Selective -->
+  <insert id="insertSelective" parameterType="com.example.movierating.db.po.Collection">
+    insert into `Collection`
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="collectionId != null">
+        collection_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="trailId != null">
+        trail_id,
+      </if>
+      <if test="collectionType != null">
+        collection_type,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="collectionId != null">
+        #{collectionId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="trailId != null">
+        #{trailId,jdbcType=INTEGER},
+      </if>
+      <if test="collectionType != null">
+        #{collectionType,jdbcType=CHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <!-- Update by Primary Key Selective -->
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.movierating.db.po.Collection">
+    update `Collection`
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="trailId != null">
+        trail_id = #{trailId,jdbcType=INTEGER},
+      </if>
+      <if test="collectionType != null">
+        collection_type = #{collectionType,jdbcType=CHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where collection_id = #{collectionId,jdbcType=INTEGER}
+  </update>
+
+  <!-- Select by User ID -->
+  <select id="selectByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from `Collection`
+    where user_id = #{userId,jdbcType=INTEGER}
+    order by create_date desc
+  </select>
+
+  <!-- Select by User ID and Trail ID -->
+  <select id="selectByUserIdAndTrailId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from `Collection`
+    where user_id = #{userId,jdbcType=INTEGER} and trail_id = #{trailId,jdbcType=INTEGER}
+  </select>
+
+  <!-- Delete by User ID and Trail ID -->
+  <delete id="deleteByUserIdAndTrailId">
+    delete from `Collection`
+    where user_id = #{userId,jdbcType=INTEGER} and trail_id = #{trailId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- Select by User ID and Collection Type -->
+  <select id="selectByUserIdAndType" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from `Collection`
+    where user_id = #{userId,jdbcType=INTEGER} and collection_type = #{collectionType,jdbcType=CHAR}
+    order by create_date desc
+  </select>
+</mapper>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.movierating.db.mappers.UserRelationshipMapper">
+
+  <!-- Base Definitions (appear once) -->
+  <resultMap id="BaseResultMap" type="com.example.movierating.db.po.UserRelationship">
+    <id column="relationship_id" jdbcType="INTEGER" property="relationshipId" />
+    <result column="follower_id" jdbcType="INTEGER" property="followerId" />
+    <result column="followed_id" jdbcType="INTEGER" property="followedId" />
+    <result column="isActive" jdbcType="BIT" property="isactive" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    relationship_id, follower_id, followed_id, isActive, create_date, update_date
+  </sql>
+
+  <!-- CRUD Operations -->
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from UserRelationship
+    where relationship_id = #{relationshipId,jdbcType=INTEGER}
+  </select>
+
+  <select id="relationshipExists" resultType="java.lang.Boolean">
+    SELECT COUNT(*) > 0
+    FROM UserRelationship
+    WHERE follower_id = #{followerId,jdbcType=INTEGER}
+      AND followed_id = #{followedId,jdbcType=INTEGER}
+  </select>
+<!--  <select id="selectFollowersByUserId" resultMap="com.example.movierating.db.mappers.UserMapper.BaseResultMap">-->
+<!--    SELECT u.*-->
+<!--    FROM UserRelationship r-->
+<!--           JOIN User u ON r.follower_id = u.user_id-->
+<!--    WHERE r.followed_id = #{userId,jdbcType=INTEGER}-->
+<!--  </select>-->
+  <select id="selectFollowerIdsByUserId" resultType="com.example.movierating.db.po.User">
+    SELECT u.*
+    FROM UserRelationship r
+           JOIN User u ON r.follower_id = u.user_id
+    WHERE r.followed_id = #{userId,jdbcType=INTEGER}
+  </select>
+    <select id="findByFollowerId" resultType="com.example.movierating.db.po.User">
+      SELECT u.*
+      FROM UserRelationship r
+             JOIN User u ON r.follower_id = u.user_id
+      where r.follower_id = #{follower_id,jdbcType=INTEGER}
+    </select>
+  <select id="findByFollowing" resultType="com.example.movierating.db.po.User">
+    SELECT u.* FROM user u
+    JOIN UserRelationship ur ON u.user_id = ur.followed_id
+    WHERE ur.follower_id = #{userId}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from UserRelationship
+    where relationship_id = #{relationshipId,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="com.example.movierating.db.po.UserRelationship">
+    insert into UserRelationship (relationship_id, follower_id, followed_id,
+                                  isActive, create_date, update_date
+    )
+    values (#{relationshipId,jdbcType=INTEGER}, #{followerId,jdbcType=INTEGER}, #{followedId,jdbcType=INTEGER},
+            #{isactive,jdbcType=BIT}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}
+           )
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.example.movierating.db.po.UserRelationship">
+    insert into UserRelationship
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="relationshipId != null">
+        relationship_id,
+      </if>
+      <if test="followerId != null">
+        follower_id,
+      </if>
+      <if test="followedId != null">
+        followed_id,
+      </if>
+      <if test="isactive != null">
+        isActive,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="relationshipId != null">
+        #{relationshipId,jdbcType=INTEGER},
+      </if>
+      <if test="followerId != null">
+        #{followerId,jdbcType=INTEGER},
+      </if>
+      <if test="followedId != null">
+        #{followedId,jdbcType=INTEGER},
+      </if>
+      <if test="isactive != null">
+        #{isactive,jdbcType=BIT},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <insert id="insertRelationship" keyProperty="relationshipId"
+          parameterType="com.example.movierating.db.po.UserRelationship"
+          useGeneratedKeys="true">
+    INSERT INTO UserRelationship (
+      follower_id,
+      followed_id,
+      isActive,
+      create_date,
+      update_date
+    ) VALUES (
+               #{followerId,jdbcType=INTEGER},
+               #{followedId,jdbcType=INTEGER},
+               1,
+               NOW(),
+               NOW()
+             )
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.movierating.db.po.UserRelationship">
+    update UserRelationship
+    <set>
+      <if test="followerId != null">
+        follower_id = #{followerId,jdbcType=INTEGER},
+      </if>
+      <if test="followedId != null">
+        followed_id = #{followedId,jdbcType=INTEGER},
+      </if>
+      <if test="isactive != null">
+        isActive = #{isactive,jdbcType=BIT},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where relationship_id = #{relationshipId,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.example.movierating.db.po.UserRelationship">
+    update UserRelationship
+    set follower_id = #{followerId,jdbcType=INTEGER},
+        followed_id = #{followedId,jdbcType=INTEGER},
+        isActive = #{isactive,jdbcType=BIT},
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+        update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where relationship_id = #{relationshipId,jdbcType=INTEGER}
+  </update>
+
+</mapper>

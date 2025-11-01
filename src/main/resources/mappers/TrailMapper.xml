@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.movierating.db.mappers.TrailMapper">
+  <resultMap id="BaseResultMap" type="com.example.movierating.db.po.Trail">
+    <id column="trail_id" jdbcType="INTEGER" property="trailId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="location" jdbcType="VARCHAR" property="location" />
+    <result column="difficulty" jdbcType="VARCHAR" property="difficulty" />
+    <result column="scenery" jdbcType="VARCHAR" property="scenery" />
+    <result column="distance" jdbcType="DECIMAL" property="distance" />
+    <result column="image_url" jdbcType="VARCHAR" property="imageUrl" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.example.movierating.db.po.Trail">
+    <result column="description" jdbcType="LONGVARCHAR" property="description" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    trail_id, name, location, difficulty, scenery, distance, image_url, create_date,
+    update_date
+  </sql>
+  <sql id="Blob_Column_List">
+    description
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from Trail
+    where trail_id = #{trailId,jdbcType=INTEGER}
+  </select>
+  <select id="selectTrails" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from Trail
+    LIMIT #{limit} OFFSET #{offset}
+  </select>
+  <select id="searchTrails" resultMap="ResultMapWithBLOBs">
+    SELECT
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    FROM Trail
+    WHERE LOWER(name) LIKE #{keywordPattern}
+    OR LOWER(location) LIKE #{keywordPattern}
+    OR LOWER(difficulty) LIKE #{keywordPattern}
+    OR LOWER(scenery) LIKE #{keywordPattern}
+    OR LOWER(description) LIKE #{keywordPattern}
+    ORDER BY
+    CASE
+    WHEN LOWER(name) LIKE #{keywordPattern} THEN 0
+    ELSE 1
+    END,
+    name ASC
+    LIMIT 50
+  </select>
+  <select id="selectByName" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from Trail
+    where name = #{name,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from Trail
+    where trail_id = #{trailId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.example.movierating.db.po.Trail">
+    insert into Trail (trail_id, name, location,
+    difficulty, scenery, distance, image_url, create_date,
+    update_date, description)
+    values (#{trailId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR},
+    #{difficulty,jdbcType=VARCHAR}, #{scenery,jdbcType=VARCHAR}, #{distance,jdbcType=DECIMAL}, #{imageUrl,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP},
+    #{updateDate,jdbcType=TIMESTAMP}, #{description,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.movierating.db.po.Trail">
+    insert into Trail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="trailId != null">
+        trail_id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="location != null">
+        location,
+      </if>
+      <if test="difficulty != null">
+        difficulty,
+      </if>
+      <if test="scenery != null">
+        scenery,
+      </if>
+      <if test="distance != null">
+        distance,
+      </if>
+      <if test="imageUrl != null">
+        image_url,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="trailId != null">
+        #{trailId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null">
+        #{location,jdbcType=VARCHAR},
+      </if>
+      <if test="difficulty != null">
+        #{difficulty,jdbcType=VARCHAR},
+      </if>
+      <if test="scenery != null">
+        #{scenery,jdbcType=VARCHAR},
+      </if>
+      <if test="distance != null">
+        #{distance,jdbcType=DECIMAL},
+      </if>
+      <if test="imageUrl != null">
+        #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.movierating.db.po.Trail">
+    update Trail
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null">
+        location = #{location,jdbcType=VARCHAR},
+      </if>
+      <if test="difficulty != null">
+        difficulty = #{difficulty,jdbcType=VARCHAR},
+      </if>
+      <if test="scenery != null">
+        scenery = #{scenery,jdbcType=VARCHAR},
+      </if>
+      <if test="distance != null">
+        distance = #{distance,jdbcType=DECIMAL},
+      </if>
+      <if test="imageUrl != null">
+        image_url = #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where trail_id = #{trailId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.example.movierating.db.po.Trail">
+    update Trail
+    set name = #{name,jdbcType=VARCHAR},
+    location = #{location,jdbcType=VARCHAR},
+    difficulty = #{difficulty,jdbcType=VARCHAR},
+    scenery = #{scenery,jdbcType=VARCHAR},
+    distance = #{distance,jdbcType=DECIMAL},
+    image_url = #{imageUrl,jdbcType=VARCHAR},
+    create_date = #{createDate,jdbcType=TIMESTAMP},
+    update_date = #{updateDate,jdbcType=TIMESTAMP},
+    description = #{description,jdbcType=LONGVARCHAR}
+    where trail_id = #{trailId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.movierating.db.po.Trail">
+    update Trail
+    set name = #{name,jdbcType=VARCHAR},
+    location = #{location,jdbcType=VARCHAR},
+    difficulty = #{difficulty,jdbcType=VARCHAR},
+    scenery = #{scenery,jdbcType=VARCHAR},
+    distance = #{distance,jdbcType=DECIMAL},
+    image_url = #{imageUrl,jdbcType=VARCHAR},
+    create_date = #{createDate,jdbcType=TIMESTAMP},
+    update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where trail_id = #{trailId,jdbcType=INTEGER}
+  </update>
+</mapper>
+

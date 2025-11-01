@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.movierating.db.mappers.RatingMapper">
+
+  <!-- Base Definitions (appear once) -->
+  <resultMap id="BaseResultMap" type="com.example.movierating.db.po.Rating">
+    <id column="rating_id" jdbcType="INTEGER" property="ratingId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="trail_id" jdbcType="INTEGER" property="trailId" />
+    <result column="score" jdbcType="DECIMAL" property="score" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+  </resultMap>
+
+
+
+
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.example.movierating.db.po.Rating">
+    <result column="comment" jdbcType="LONGVARCHAR" property="comment" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    rating_id, user_id, trail_id, score, create_date, update_date
+  </sql>
+
+  <sql id="Blob_Column_List">
+    comment
+  </sql>
+
+  <!-- CRUD Operations -->
+  <select id="getTrailAvgRating" parameterType="java.lang.Integer" resultType="java.lang.Double">
+    SELECT AVG(score) FROM rating WHERE trail_id = #{trailId}
+  </select>
+  <select id="findByTrailId" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    SELECT r.*, u.username
+    FROM rating r
+    LEFT JOIN user u ON r.user_id = u.user_id
+    WHERE r.trail_id = #{trailId}
+    ORDER BY r.create_date DESC
+  </select>
+  <select id="findByUserIdAndTrailId" parameterType="map" resultMap="BaseResultMap">
+    SELECT * FROM rating WHERE user_id = #{userId} AND trail_id = #{trailId} LIMIT 1
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />,
+    <include refid="Blob_Column_List" />
+    from Rating
+    where rating_id = #{ratingId,jdbcType=INTEGER}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from Rating
+    where rating_id = #{ratingId,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="com.example.movierating.db.po.Rating">
+    insert into Rating (rating_id, user_id, trail_id,
+    score, create_date, update_date,
+    comment)
+    values (#{ratingId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{trailId,jdbcType=INTEGER},
+    #{score,jdbcType=DECIMAL}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP},
+    #{comment,jdbcType=LONGVARCHAR})
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.example.movierating.db.po.Rating">
+    insert into Rating
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="ratingId != null">
+        rating_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="trailId != null">
+        trail_id,
+      </if>
+      <if test="score != null">
+        score,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="comment != null">
+        comment,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="ratingId != null">
+        #{ratingId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="trailId != null">
+        #{trailId,jdbcType=INTEGER},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=DECIMAL},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="comment != null">
+        #{comment,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.movierating.db.po.Rating">
+    update Rating
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="trailId != null">
+        trail_id = #{trailId,jdbcType=INTEGER},
+      </if>
+      <if test="score != null">
+        score = #{score,jdbcType=DECIMAL},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="comment != null">
+        comment = #{comment,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where rating_id = #{ratingId,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.example.movierating.db.po.Rating">
+    update Rating
+    set user_id = #{userId,jdbcType=INTEGER},
+    trail_id = #{trailId,jdbcType=INTEGER},
+    score = #{score,jdbcType=DECIMAL},
+    create_date = #{createDate,jdbcType=TIMESTAMP},
+    update_date = #{updateDate,jdbcType=TIMESTAMP},
+    comment = #{comment,jdbcType=LONGVARCHAR}
+    where rating_id = #{ratingId,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.example.movierating.db.po.Rating">
+    update Rating
+    set user_id = #{userId,jdbcType=INTEGER},
+    trail_id = #{trailId,jdbcType=INTEGER},
+    score = #{score,jdbcType=DECIMAL},
+    create_date = #{createDate,jdbcType=TIMESTAMP},
+    update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where rating_id = #{ratingId,jdbcType=INTEGER}
+  </update>
+
+</mapper>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.movierating.db.mappers.UserMapper">
+
+  <resultMap id="BaseResultMap" type="com.example.movierating.db.po.User">
+    <id column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="profile_url" jdbcType="VARCHAR" property="profileUrl" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="bio" jdbcType="LONGVARCHAR" property="bio" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    user_id, username, email, password, profile_url, create_date, update_date, bio
+  </sql>
+
+  <insert id="insert" parameterType="com.example.movierating.db.po.User">
+    INSERT INTO User (
+    username, email, password,
+    profile_url, create_date, update_date, bio
+    )
+    VALUES (
+    #{username,jdbcType=VARCHAR},
+    #{email,jdbcType=VARCHAR},
+    #{password,jdbcType=VARCHAR},
+    #{profileUrl,jdbcType=VARCHAR},
+    #{createDate,jdbcType=TIMESTAMP},
+    #{updateDate,jdbcType=TIMESTAMP},
+    #{bio,jdbcType=LONGVARCHAR}
+    )
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.example.movierating.db.po.User">
+    INSERT INTO User
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="username != null">username,</if>
+      <if test="email != null">email,</if>
+      <if test="password != null">password,</if>
+      <if test="profileUrl != null">profile_url,</if>
+      <if test="createDate != null">create_date,</if>
+      <if test="updateDate != null">update_date,</if>
+      <if test="bio != null">bio,</if>
+    </trim>
+    <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+      <if test="username != null">#{username,jdbcType=VARCHAR},</if>
+      <if test="email != null">#{email,jdbcType=VARCHAR},</if>
+      <if test="password != null">#{password,jdbcType=VARCHAR},</if>
+      <if test="profileUrl != null">#{profileUrl,jdbcType=VARCHAR},</if>
+      <if test="createDate != null">#{createDate,jdbcType=TIMESTAMP},</if>
+      <if test="updateDate != null">#{updateDate,jdbcType=TIMESTAMP},</if>
+      <if test="bio != null">#{bio,jdbcType=LONGVARCHAR},</if>
+    </trim>
+  </insert>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM User
+    WHERE user_id = #{userId,jdbcType=INTEGER}
+  </select>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.movierating.db.po.User">
+    UPDATE User
+    <set>
+      <if test="username != null">username = #{username,jdbcType=VARCHAR},</if>
+      <if test="email != null">email = #{email,jdbcType=VARCHAR},</if>
+      <if test="password != null">password = #{password,jdbcType=VARCHAR},</if>
+      <if test="profileUrl != null">profile_url = #{profileUrl,jdbcType=VARCHAR},</if>
+      <if test="updateDate != null">update_date = #{updateDate,jdbcType=TIMESTAMP},</if>
+      <if test="bio != null">bio = #{bio,jdbcType=LONGVARCHAR},</if>
+    </set>
+    WHERE user_id = #{userId,jdbcType=INTEGER}
+  </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    DELETE FROM User
+    WHERE user_id = #{userId,jdbcType=INTEGER}
+  </delete>
+
+  <!-- Additional custom queries can be added here -->
+  <select id="selectByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM User
+    WHERE username = #{username,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByEmail" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM User
+    WHERE email = #{email,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByUserId" resultType="com.example.movierating.db.po.User">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM User
+    WHERE user_id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="findUsersNotFollowed" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM User  <!-- Consistent capitalization -->
+    WHERE user_id != #{currentUserId,jdbcType=INTEGER}
+    AND user_id NOT IN (
+    SELECT followed_id
+    FROM UserRelationship
+    WHERE follower_id = #{currentUserId,jdbcType=INTEGER}
+    )
+    LIMIT 5
+  </select>
+
+</mapper>
