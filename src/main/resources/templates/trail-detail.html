@@ -11,7 +11,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="#">TrailRank</a>
+        <a class="navbar-brand" th:href="@{/}">TrailRank</a>
         <div class="d-flex">
             <a class="btn btn-outline-light me-2" th:href="@{/trails}">
                 <i class="fas fa-arrow-left"></i> Back to Trails
@@ -31,7 +31,7 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-4">
-            <img th:src="${trail.imageUrl != null and !#strings.isEmpty(trail.imageUrl)} ?
+            <img th:src="${trail.imageUrl != null && !#strings.isEmpty(trail.imageUrl)} ?
                   ${trail.imageUrl} :
                   @{/images/img.png}"
                  th:alt="${trail.name}"
@@ -70,10 +70,9 @@
         </div>
     </div>
 
-    <!-- Rating Section -->
     <hr class="my-4">
 
-    <!-- When view parameter is rating, show only the simplified rating interface -->
+    <!-- Summary-only view when ?view=rating -->
     <div th:if="${param.view != null && param.view[0] == 'rating'}" class="row mt-4">
         <div class="col-12 text-center">
             <h2>Rating Summary</h2>
@@ -91,13 +90,13 @@
         </div>
     </div>
 
-    <!-- When view parameter is not rating, show the complete rating form and review list -->
+    <!-- Full rating form + reviews when not in summary view -->
     <div th:unless="${param.view != null && param.view[0] == 'rating'}" class="row mt-4">
         <div class="col-md-6">
-            <h4>Rate This Movie</h4>
+            <h4>Rate This Trail</h4>
             <form id="ratingForm" class="border p-3 rounded">
                 <div class="mb-3">
-                    <label class="form-label">Your Rating (1-10)</label>
+                    <label class="form-label">Your Rating (1–10)</label>
                     <select id="score" class="form-select" required>
                         <option value="">Select rating</option>
                         <option th:each="i : ${#numbers.sequence(1, 10)}"
@@ -141,92 +140,85 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ trail_id: trailId, user_id: userId })
         })
-            .then(response => {
-                console.log('Add to collection response status:', response.status);
-                if (response.ok) {
-                    location.reload(); // Reload to show "Already in Collection"
-                } else {
-                    throw new Error('Failed to add to collection.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to add to collection: ' + error.message);
-            });
+        .then(response => {
+            console.log('Add to collection response status:', response.status);
+            if (response.ok) {
+                location.reload(); // Reload to show "Already in Collection"
+            } else {
+                throw new Error('Failed to add to collection.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to add to collection: ' + error.message);
+        });
     }
 
-    // Rating functions
-    document.getElementById('ratingForm').addEventListener('submit', function(e) {
+    function submitRating(e) {
         e.preventDefault();
 
         const score = document.getElementById('score').value;
         const comment = document.getElementById('comment').value;
 
-        // Validate input
         if (!score) {
             alert('Please select a rating');
             return;
         }
 
-        // Check if user is logged in
         if (!userId) {
-            alert('Please log in to rate this movie');
+            alert('Please log in to rate this trail');
             return;
         }
 
-        // Show submission status
-        const submitButton = this.querySelector('button[type="submit"]');
+        const submitButton = e.target.querySelector('button[type="submit"]');
         const originalText = submitButton.innerHTML;
         submitButton.disabled = true;
         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
 
         console.log('Submitting rating:', {
             userId: userId,
-            movieId: movieId,
+            trailId: trailId,
             score: score,
             comment: comment
         });
 
-        // Use the correct API endpoint /api/ratings/rate
         fetch('/api/ratings/rate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 userId: Number(userId),
-                movieId: Number(movieId),
-                score: parseInt(score),  // Ensure conversion to number
+                trailId: Number(trailId),
+                score: parseInt(score, 10),
                 comment: comment
             })
         })
-            .then(response => {
-                console.log('Rating submission response status:', response.status);
-                if (response.ok) {
-                    return response.json().catch(() => ({})); // Handle empty response
-                } else {
-                    throw new Error('Failed to submit rating');
-                }
-            })
-            .then(data => {
-                console.log('Rating submitted successfully:', data);
-                loadRatings();
-                document.getElementById('ratingForm').reset();
-                alert('Rating submitted successfully!');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to submit rating: ' + error.message);
-            })
-            .finally(() => {
-                // Restore button state
-                submitButton.disabled = false;
-                submitButton.innerHTML = originalText;
-            });
-    });
+        .then(response => {
+            console.log('Rating submission response status:', response.status);
+            if (response.ok) {
+                return response.json().catch(() => ({}));
+            } else {
+                throw new Error('Failed to submit rating');
+            }
+        })
+        .then(data => {
+            console.log('Rating submitted successfully:', data);
+            loadRatings();
+            e.target.reset();
+            alert('Rating submitted successfully!');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to submit rating: ' + error.message);
+        })
+        .finally(() => {
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalText;
+        });
+    }
 
     function loadRatings() {
         console.log('Loading ratings for trail ID:', trailId);
 
-        // Use the endpoint defined in the controller /api/ratings/trail/{trailId}/avg
         fetch(`/api/ratings/trail/${trailId}/avg`)
             .then(response => {
                 console.log('Average rating response status:', response.status);
@@ -239,7 +231,6 @@
                 console.log('Average rating:', avg);
                 document.getElementById('avgRating').textContent = avg ? avg.toFixed(1) : '-';
 
-                // Also update the rating circle (if it exists)
                 const ratingCircle = document.getElementById('ratingCircle');
                 if (ratingCircle) {
                     ratingCircle.textContent = avg ? avg.toFixed(1) : '-';
@@ -250,7 +241,6 @@
                 document.getElementById('avgRating').textContent = '-';
             });
 
-        // Load all ratings - assuming the backend API for getting all ratings is implemented
         fetch(`/api/ratings/trail/${trailId}`)
             .then(response => {
                 console.log('Rating list response status:', response.status);
@@ -262,6 +252,10 @@
             .then(ratings => {
                 console.log('Ratings received:', ratings);
                 const container = document.getElementById('ratingList');
+                if (!container) {
+                    return;
+                }
+
                 container.innerHTML = '';
 
                 if (!ratings || ratings.length === 0) {
@@ -269,36 +263,41 @@
                     return;
                 }
 
-                ratings.reverse().forEach(rating => {
+                ratings.slice().reverse().forEach(rating => {
                     const ratingElement = document.createElement('div');
                     ratingElement.className = 'list-group-item';
                     ratingElement.innerHTML = `
-                  <div class="d-flex justify-content-between">
-                      <h6 class="mb-1">${rating.username || 'User ' + rating.userId}</h6>
-                      <small class="text-muted">${new Date(rating.createDate).toLocaleDateString()}</small>
-                  </div>
-                  <div class="mb-1">
-                      <span class="badge bg-warning text-dark">${rating.score}/10</span>
-                  </div>
-                  <p class="mb-1">${rating.comment || 'No comment content'}</p>
-              `;
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-1">${rating.username || 'User ' + rating.userId}</h6>
+                            <small class="text-muted">${rating.createDate ? new Date(rating.createDate).toLocaleDateString() : ''}</small>
+                        </div>
+                        <div class="mb-1">
+                            <span class="badge bg-warning text-dark">${rating.score}/10</span>
+                        </div>
+                        <p class="mb-1">${rating.comment || 'No comment content'}</p>
+                    `;
                     container.appendChild(ratingElement);
                 });
             })
             .catch(error => {
                 console.error('Error loading rating list:', error);
-                document.getElementById('ratingList').innerHTML =
-                    '<div class="alert alert-danger">Failed to load reviews</div>';
+                const container = document.getElementById('ratingList');
+                if (container) {
+                    container.innerHTML =
+                        '<div class="alert alert-danger">Failed to load reviews</div>';
+                }
             });
     }
 
-    // Load ratings when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Page loaded, initializing...');
+    document.addEventListener('DOMContentLoaded', function () {
+        // Only attach submit handler if the form exists (i.e., not in summary-only view)
+        const ratingForm = document.getElementById('ratingForm');
+        if (ratingForm) {
+            ratingForm.addEventListener('submit', submitRating);
+        }
+
         loadRatings();
     });
-    // Load ratings when page loads
-    document.addEventListener('DOMContentLoaded', loadRatings);
 </script>
 </body>
 </html>
