@@ -12,7 +12,8 @@
     <artifactId>TrailRank</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>TrailRank</name>
-    <description>TrailRank - Hiking Trail Discovery & Tracking Platform</description>
+    <description>TrailRank - Hiking Trail Discovery &amp; Recommendation Platform</description>
+
     <url/>
     <licenses>
         <license/>
