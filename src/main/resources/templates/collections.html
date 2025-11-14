@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Collection - TrailRank</title>
+  <title>My Trails - TrailRank</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="icon" th:href="@{/images/icon.png}" type="image/png">
@@ -12,19 +12,20 @@
 <!-- Navigation bar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
-    <a class="navbar-brand" href="#">My Collections</a>
+    <a class="navbar-brand" th:href="@{/}">TrailRank</a>
     <div class="d-flex">
+      <!-- Keep href to /movies for now; just relabel as trails -->
       <a class="btn btn-outline-light" th:href="@{/movies}">
-        <i class="fas fa-film"></i> Browse Movies
+        <i class="fas fa-mountain"></i> Browse Trails
       </a>
     </div>
   </div>
 </nav>
 
 <div class="container mt-4">
-  <h1 class="mb-4">My Collection</h1>
+  <h1 class="mb-4">My Trail Collection</h1>
 
-  <!-- Movie list -->
+  <!-- Trail list (backed by "movies" model for now) -->
   <div class="row">
     <div th:each="movie : ${movies}" class="col-md-3 mb-4">
       <div class="card movie-card">
@@ -38,8 +39,9 @@
         <div class="card-body">
           <h5 class="card-title" th:text="${movie.title}"></h5>
           <p class="card-text">
-            <small class="text-muted" th:text="${movie.genre} ?: 'Genre not specified'"></small><br>
-            <span th:text="${movie.duration != null ? movie.duration + ' min' : 'Duration unknown'}"></span>
+            <!-- Make these labels more generic -->
+            <small class="text-muted" th:text="${movie.genre} ?: 'Category not specified'"></small><br>
+            <span th:text="${movie.duration != null ? movie.duration + ' min' : 'Length unknown'}"></span>
           </p>
           <div class="d-flex justify-content-between">
             <a th:href="@{/movies/{movieId}(movieId=${movie.movieId})}"
@@ -56,11 +58,11 @@
       </div>
     </div>
 
-    <!-- Display when no movies -->
+    <!-- Display when no trails -->
     <div th:if="${movies.empty}" class="col-12 text-center py-5">
-      <i class="fas fa-film fa-3x text-muted mb-3"></i>
-      <h4>No movies in your collection</h4>
-      <p>Browse movies and add them to your collection!</p>
+      <i class="fas fa-mountain fa-3x text-muted mb-3"></i>
+      <h4>No trails in your collection</h4>
+      <p>Browse trails and add them to your collection!</p>
     </div>
   </div>
 </div>
@@ -71,28 +73,9 @@
 </script>
 
 <script>
-  function removeFromCollection(movieId) {
-    if (confirm('Remove this movie from your collection?')) {
-      fetch(`/api/collections/user/${userId}/movie/${movieId}`, {
-        method: 'DELETE'
-      })
-      .then(response => {
-        if (response.ok) {
-          window.location.reload();
-        } else {
-          alert('Unable to remove movie');
-        }
-      })
-      .catch(error => console.error('Error:', error));
-    }
-  }
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
   function removeFromCollection(button) {
     const movieId = button.getAttribute('data-movie-id');
-    if (confirm('Remove this movie from your collection?')) {
+    if (confirm('Remove this trail from your collection?')) {
       fetch(`/api/collections/user/${userId}/movie/${movieId}`, {
         method: 'DELETE'
       })
@@ -100,7 +83,7 @@
         if (response.ok) {
           window.location.reload();
         } else {
-          alert('Unable to remove movie');
+          alert('Unable to remove trail');
         }
       })
       .catch(error => console.error('Error:', error));
