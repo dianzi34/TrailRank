@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to MovieRatings</title>
+    <title>Welcome to TrailRank</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" th:href="@{/images/icon.png}" type="image/png">
     <style>
         .hero-section {
             background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-            url('https://source.unsplash.com/random/1920x1080/?movie,theater');
+            url('https://source.unsplash.com/random/1920x1080/?hiking,mountains,trail');
             background-size: cover;
             background-position: center;
             height: 100vh;
@@ -39,7 +39,7 @@
 <!-- Navigation Bar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="#">MovieRatings</a>
+        <a class="navbar-brand" href="#">TrailRank</a>
         <div class="collapse navbar-collapse justify-content-end">
         </div>
     </div>
@@ -49,8 +49,10 @@
 <section class="hero-section">
     <div class="container">
         <div class="hero-content">
-            <h1 class="display-4 fw-bold mb-4">Discover, Rate, Share</h1>
-            <p class="lead mb-5">Join our community of movie lovers. Rate your favorite films, create collections, and connect with other cinephiles.</p>
+            <h1 class="display-4 fw-bold mb-4">Discover Trails, Hike, Share</h1>
+            <p class="lead mb-5">
+                Find your next favorite trail, track your hikes, and share outdoor adventures with the community.
+            </p>
             <div class="auth-buttons">
                 <a th:href="@{/register}" class="btn btn-primary btn-lg">Get Started</a>
                 <a th:href="@{/login}" class="btn btn-outline-light btn-lg">Login</a>
@@ -65,24 +67,24 @@
         <div class="row text-center">
             <div class="col-md-4 mb-4">
                 <div class="feature-icon">
-                    <i class="fas fa-film"></i>
+                    <i class="fas fa-mountain"></i>
                 </div>
-                <h3>Browse Movies</h3>
-                <p>Discover thousands of movies with detailed information and ratings.</p>
+                <h3>Explore Trails</h3>
+                <p>Browse hiking routes by difficulty, distance, elevation gain, and scenery.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-icon">
+                    <i class="fas fa-hiking"></i>
+                </div>
+                <h3>Track Your Hikes</h3>
+                <p>Log completed hikes, keep notes on conditions, and monitor your progress over time.</p>
             </div>
             <div class="col-md-4 mb-4">
                 <div class="feature-icon">
                     <i class="fas fa-star"></i>
                 </div>
-                <h3>Rate & Review</h3>
-                <p>Share your opinions and see what others think about your favorite films.</p>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="feature-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <h3>Connect</h3>
-                <p>Follow other users and discover new movies through your network.</p>
+                <h3>Rate & Review Trails</h3>
+                <p>Share tips, leave ratings, and help other hikers plan safe and fun adventures.</p>
             </div>
         </div>
     </div>
@@ -91,7 +93,7 @@
 <!-- Footer -->
 <footer class="bg-dark text-white py-4">
     <div class="container text-center">
-        <p class="mb-0">© 2023 MovieRatings. All rights reserved.</p>
+        <p class="mb-0">© 2025 TrailRank. All rights reserved.</p>
     </div>
 </footer>
 
