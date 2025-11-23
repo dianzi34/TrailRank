@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import jakarta.annotation.Resource;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,18 +32,37 @@ public class PageController {
       return "redirect:/login";
     }
 
+    try {
     // get user's collections
     List<Collection> collections = collectionService.getUserCollection(userId);
+      if (collections == null) {
+        collections = new ArrayList<>();
+      }
 
-
-    List<Trail> trails = collections.stream()
-        .map(c -> trailService.getTrailById(c.getTrailId()))
+      List<Trail> trails = new ArrayList<>();
+      if (collections != null && !collections.isEmpty()) {
+        trails = collections.stream()
+            .map(c -> {
+              try {
+                return trailService.getTrailById(c.getTrailId());
+              } catch (Exception e) {
+                System.err.println("Error getting trail " + c.getTrailId() + ": " + e.getMessage());
+                return null;
+              }
+            })
         .filter(Objects::nonNull)
-        .toList();
+            .collect(java.util.stream.Collectors.toList());
+      }
 
     model.addAttribute("trails", trails);
     model.addAttribute("collections", collections);
     model.addAttribute("userId", userId);
     return "collections";
+    } catch (Exception e) {
+      System.err.println("Error loading collections: " + e.getMessage());
+      e.printStackTrace();
+      model.addAttribute("error", "Error loading collections: " + e.getMessage());
+      return "error";
+    }
   }
 }

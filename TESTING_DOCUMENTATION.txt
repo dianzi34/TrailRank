@@ -1,0 +1,333 @@
+TrailRank Testing Documentation
+
+Project: TrailRank - Hiking Trail Discovery & Recommendation Platform
+Team: CS5500 Fall 2025 - Team 11
+Date: November 23, 2025
+
+
+1. Testing Strategy
+
+Our testing strategy follows a multi-layered approach combining unit tests, integration tests, and manual testing to ensure comprehensive coverage of the application's functionality.
+
+Testing Approach:
+Unit Testing: Testing individual components (DAOs, Services) in isolation
+Integration Testing: Testing the interaction between components (Controllers, Services, Database)
+Manual Testing: End-to-end testing of user workflows through the web interface
+Database Testing: Verifying data persistence and retrieval operations
+
+Testing Levels:
+1. Unit Level: Individual methods and classes
+2. Integration Level: Component interactions
+3. System Level: End-to-end user scenarios
+4. Acceptance Level: User-facing functionality validation
+
+
+2. Scope of Testing
+
+Functional Testing:
+User authentication (login, registration, logout)
+User profile management
+Trail browsing and search
+Trail collection management (add, remove, view)
+Trail rating and review system
+User relationship management (follow/unfollow)
+Error handling and edge cases
+
+Non-Functional Testing:
+Database connectivity and query performance
+Session management
+Character encoding (UTF-8 support for Chinese characters)
+Error page rendering
+Navigation and routing
+
+Components Tested:
+Controllers: UserController, TrailController, CollectionController, RatingController, PageController
+Services: UserService, TrailService, CollectionService, RelationshipService
+DAOs: UserDao, TrailDao, CollectionDao, RatingDao
+Database: MySQL database schema and data integrity
+Templates: Thymeleaf HTML templates rendering
+
+
+3. Testing Environment
+
+Development Environment:
+Operating System: macOS 14.6.0
+Java Version: OpenJDK 22.0.1
+Build Tool: Maven 3.9.9 (via Maven Wrapper)
+Application Server: Spring Boot 3.4.4 (Embedded Tomcat)
+Database: MySQL 8.4.3
+Testing Framework: JUnit 5 (Jupiter)
+Browser: Chrome (for manual testing)
+
+Configuration:
+Application Port: 8082
+Database: TrailRank (MySQL)
+Database Connection: localhost:3306
+Character Encoding: UTF-8
+
+Test Data:
+Test users created dynamically with unique identifiers
+Sample trails from database schema
+Test collections and ratings
+
+
+4. All Tests Performed
+
+4.1 Unit Tests
+
+Test 1: User DAO - Insert User
+Brief Description: Test inserting a new user into the database
+Test Method: insertUser_ShouldSuccessfullyInsertUserAndReturnUserId()
+Expected Result: User should be successfully inserted, and the user should be retrievable from the database with a valid user ID
+Observed Result: PASS - User is successfully inserted and can be retrieved by email
+
+Test 2: User DAO - Get User by Email
+Brief Description: Test retrieving a user by email address
+Test Method: getUserByEmailTest()
+Expected Result: User with the specified email should be found and returned
+Observed Result: PASS - User is successfully retrieved by email address
+
+Test 3: Application Context Loading
+Brief Description: Test that Spring Boot application context loads successfully
+Test Method: contextLoads()
+Expected Result: Application should start without errors, all beans should be properly configured
+Observed Result: PASS - Application context loads successfully, all dependencies are resolved
+
+
+4.2 Integration Tests (Manual)
+
+Test 4: User Registration
+Brief Description: Test the complete user registration workflow
+Test Steps: 
+1. Navigate to /register
+2. Fill in username, email, password
+3. Submit registration form
+Expected Result: New user should be created, redirected to trails page, session should contain user information
+Observed Result: PASS - User registration works correctly, user is created and logged in automatically
+
+Test 5: User Login
+Brief Description: Test user authentication and login
+Test Steps:
+1. Navigate to /login
+2. Enter valid email and password
+3. Submit login form
+Expected Result: User should be authenticated, session created, redirected to /trails
+Observed Result: PASS - Login successful, session attributes set correctly, redirect works
+
+Test 6: User Logout
+Brief Description: Test user logout functionality
+Test Steps:
+1. While logged in, click "Logout" button
+2. Verify session is cleared
+Expected Result: Session should be invalidated, user redirected to home page, no longer authenticated
+Observed Result: PASS - Logout works correctly, session cleared, redirects to home page
+
+Test 7: View Trail List
+Brief Description: Test browsing available trails
+Test Steps:
+1. Navigate to /trails (while logged in)
+2. View list of trails
+Expected Result: List of trails should be displayed with trail information (name, location, difficulty, distance)
+Observed Result: PASS - Trails are displayed correctly with all information
+
+Test 8: Search Trails
+Brief Description: Test trail search functionality
+Test Steps:
+1. Navigate to /trails/search?query=mountain
+2. View search results
+Expected Result: Only trails matching the search query should be displayed
+Observed Result: PASS - Search filters trails correctly based on query
+
+Test 9: View Trail Details
+Brief Description: Test viewing individual trail details
+Test Steps:
+1. Click on a trail from the list
+2. Navigate to /trails/{id}
+Expected Result: Detailed trail information should be displayed including name, location, difficulty, distance, description
+Observed Result: PASS - Trail details page displays all information correctly
+
+Test 10: Add Trail to Collection
+Brief Description: Test adding a trail to user's collection
+Test Steps:
+1. View a trail detail page
+2. Add trail to collection (via API or UI)
+Expected Result: Trail should be added to user's collection, collection status should update
+Observed Result: PASS - Trail successfully added to collection
+
+Test 11: View My Collections
+Brief Description: Test viewing user's collected trails
+Test Steps:
+1. Navigate to /collections
+2. View collected trails
+Expected Result: All trails in user's collection should be displayed
+Observed Result: PASS - Collections page displays user's trails correctly
+
+Test 12: Remove Trail from Collection
+Brief Description: Test removing a trail from collection
+Test Steps:
+1. Navigate to /collections
+2. Click "Remove" on a trail
+Expected Result: Trail should be removed from collection, page should refresh
+Observed Result: PASS - Trail successfully removed from collection
+
+Test 13: View User Profile
+Brief Description: Test viewing user profile page
+Test Steps:
+1. Click on user profile icon
+2. Navigate to /profile
+Expected Result: User profile should display username, email, bio, followers count, following count, and lists of followers/following
+Observed Result: PASS - Profile page displays correctly with all user information
+
+Test 14: Rate a Trail
+Brief Description: Test submitting a rating for a trail
+Test Steps:
+1. View trail details
+2. Submit a rating (score and optional comment)
+Expected Result: Rating should be saved, average rating should update
+Observed Result: PASS - Rating successfully saved and displayed
+
+Test 15: Database Connection
+Brief Description: Test database connectivity and query execution
+Test Steps: Application startup and database operations
+Expected Result: Database connection should be established, queries should execute successfully
+Observed Result: PASS - Database connection works, all queries execute correctly
+
+Test 16: Character Encoding (Chinese Support)
+Brief Description: Test UTF-8 character encoding for Chinese characters
+Test Steps: Display pages with Chinese text
+Expected Result: Chinese characters should display correctly without garbled text
+Observed Result: PASS - Chinese characters display correctly after encoding configuration
+
+Test 17: Error Handling - Invalid Login
+Brief Description: Test error handling for invalid login credentials
+Test Steps:
+1. Navigate to /login
+2. Enter invalid email/password
+3. Submit form
+Expected Result: Error message should be displayed, user should remain on login page
+Observed Result: PASS - Error message displayed correctly, no redirect occurs
+
+Test 18: Error Handling - 404 Error Page
+Brief Description: Test custom error page for 404 errors
+Test Steps: Navigate to non-existent URL
+Expected Result: Custom error page should display with error details
+Observed Result: PASS - Error page displays with status code and message
+
+Test 19: Error Handling - 500 Error Page
+Brief Description: Test custom error page for server errors
+Test Steps: Trigger server error (e.g., database connection issue)
+Expected Result: Custom error page should display with exception details and stack trace
+Observed Result: PASS - Error page displays detailed error information
+
+Test 20: Session Management
+Brief Description: Test session persistence across requests
+Test Steps: 
+1. Login
+2. Navigate between pages
+3. Verify session data persists
+Expected Result: Session attributes (userId, userEmail, username) should persist across page navigations
+Observed Result: PASS - Session data persists correctly
+
+Test 21: Follow User
+Brief Description: Test following another user
+Test Steps:
+1. View another user's profile
+2. Click "Follow" button
+Expected Result: User relationship should be created, following count should update
+Observed Result: PASS - Follow functionality works correctly
+
+Test 22: Unfollow User
+Brief Description: Test unfollowing a user
+Test Steps:
+1. View profile of a followed user
+2. Click "Unfollow" button
+Expected Result: User relationship should be updated, following count should decrease
+Observed Result: PASS - Unfollow functionality works correctly
+
+
+4.3 Database Tests
+
+Test 23: Database Schema Validation
+Brief Description: Verify all required database tables exist
+Test Steps: Query database for table existence
+Expected Result: All tables (User, Trail, Collection, Rating, UserRelationship) should exist
+Observed Result: PASS - All required tables exist with correct schema
+
+Test 24: Foreign Key Constraints
+Brief Description: Test referential integrity
+Test Steps: Attempt to insert invalid foreign key references
+Expected Result: Database should reject invalid foreign key references
+Observed Result: PASS - Foreign key constraints work correctly
+
+Test 25: Data Persistence
+Brief Description: Test that data persists after application restart
+Test Steps: 
+1. Create test data
+2. Restart application
+3. Verify data still exists
+Expected Result: All data should persist after restart
+Observed Result: PASS - Data persists correctly
+
+
+5. Test Results Summary
+
+Overall Test Statistics:
+Total Tests: 25
+Passed: 25
+Failed: 0
+Success Rate: 100%
+
+Test Coverage:
+Unit Tests: 3 tests covering DAO layer
+Integration Tests: 19 manual tests covering end-to-end workflows
+Database Tests: 3 tests covering data integrity
+
+Key Findings:
+1. All core functionality works as expected
+2. Database operations are reliable
+3. Error handling is properly implemented
+4. User authentication and authorization work correctly
+5. Character encoding (UTF-8) is properly configured
+6. Session management functions correctly
+7. All API endpoints respond correctly
+
+Issues Identified and Resolved:
+1. Issue: UserService had incorrect @Builder annotation causing initialization failure
+   Resolution: Removed @Builder annotation, used constructor/setter pattern
+   
+2. Issue: Missing UserRelationship table causing profile page errors
+   Resolution: Created UserRelationship table in database
+   
+3. Issue: Collections template using wrong variable names (movie vs trail)
+   Resolution: Updated template to use correct Trail object properties
+   
+4. Issue: Profile.html template was incomplete (only 128 lines)
+   Resolution: Rewrote complete profile.html template
+   
+5. Issue: Character encoding not properly configured for Chinese characters
+   Resolution: Added UTF-8 encoding configuration in application.properties and WebConfig
+   
+6. Issue: Logout endpoint missing
+   Resolution: Added logout handler in UserController
+   
+7. Issue: Error page had Chinese buttons
+   Resolution: Changed error page buttons to English
+
+
+6. Short Summary
+
+The TrailRank application has undergone comprehensive testing covering unit tests, integration tests, and manual end-to-end testing. All 25 tests performed have passed successfully, demonstrating that:
+
+1. Core Functionality: All primary features (user authentication, trail browsing, collections, ratings, profiles) work correctly
+2. Data Integrity: Database operations are reliable with proper foreign key constraints
+3. Error Handling: Custom error pages provide useful debugging information
+4. User Experience: Navigation, session management, and UI interactions function smoothly
+5. Internationalization: UTF-8 encoding properly supports Chinese characters
+6. Code Quality: Application follows Spring Boot best practices with proper separation of concerns
+
+The application is ready for deployment and use. All identified issues during testing have been resolved, and the system demonstrates stability and reliability across all tested scenarios.
+
+
+Document Prepared By: Team 11 - CS5500 Fall 2025
+Last Updated: November 23, 2025
+

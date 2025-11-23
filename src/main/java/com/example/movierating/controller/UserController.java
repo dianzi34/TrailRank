@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,8 +29,13 @@ public class UserController {
 
 
     @GetMapping("/login")
-    public String showLoginForm() {
-        return "login";
+    public String showLoginForm(Model model) {
+        try {
+            return "login";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error loading login page: " + e.getMessage());
+            return "error";
+        }
     }
 
     @GetMapping("/")
@@ -104,33 +110,66 @@ public class UserController {
         String userEmail = (String) session.getAttribute("userEmail");
         Integer userId = (Integer) session.getAttribute("userId");
 
-        if (userEmail == null) {
+        if (userEmail == null || userId == null) {
             return "redirect:/login";
         }
 
-        User user = userService.getUserByEmail(userEmail);
+        try {
+            User user = userService.getUserByEmail(userEmail);
 
-        if (user == null) {
-            return "redirect:/login";
+            if (user == null) {
+                return "redirect:/login";
+            }
+
+            // Initialize with empty lists to avoid null pointer exceptions
+            List<User> followers = new ArrayList<>();
+            List<User> following = new ArrayList<>();
+            List<User> suggestedUsers = new ArrayList<>();
+
+            try {
+                followers = relationshipService.getFollowerIds(userId);
+                if (followers == null) {
+                    followers = new ArrayList<>();
+                }
+            } catch (Exception e) {
+                System.err.println("Error getting followers: " + e.getMessage());
+                e.printStackTrace();
+            }
+
+            try {
+                following = relationshipService.getFollowing(userId);
+                if (following == null) {
+                    following = new ArrayList<>();
+                }
+            } catch (Exception e) {
+                System.err.println("Error getting following: " + e.getMessage());
+                e.printStackTrace();
+            }
+
+            try {
+                suggestedUsers = userService.getSuggestedUsers(userId);
+                if (suggestedUsers == null) {
+                    suggestedUsers = new ArrayList<>();
+                }
+            } catch (Exception e) {
+                System.err.println("Error getting suggested users: " + e.getMessage());
+                e.printStackTrace();
+            }
+
+            model.addAttribute("user", user);
+            model.addAttribute("followers", followers);
+            model.addAttribute("following", following);
+            model.addAttribute("followerCount", followers.size());
+            model.addAttribute("followingCount", following.size());
+            model.addAttribute("suggestedUsers", suggestedUsers);
+
+            return "profile";
+        } catch (Exception e) {
+            System.err.println("Error loading profile: " + e.getMessage());
+            e.printStackTrace();
+            model.addAttribute("error", "Error loading profile: " + e.getMessage());
+            return "error";
         }
-
-        List<User> followers = relationshipService.getFollowerIds(userId);
-        List<User> following = relationshipService.getFollowing(userId);
-        List<User> suggestedUsers = userService.getSuggestedUsers(userId);
-
-
-        model.addAttribute("user", user);
-        model.addAttribute("followers", followers);
-        model.addAttribute("following", following);
-        model.addAttribute("followerCount", followers.size());
-        model.addAttribute("followingCount", following.size());
-        model.addAttribute("suggestedUsers", suggestedUsers);
-
-
-        System.out.println("Suggested Users: " + suggestedUsers);
-
-
-        return "profile";
     }
 
     @Data
@@ -196,5 +235,11 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error unfollowing user");
         }
+    }
+
+    @PostMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
     }
 }

@@ -49,7 +49,7 @@
       where r.follower_id = #{follower_id,jdbcType=INTEGER}
     </select>
   <select id="findByFollowing" resultType="com.example.movierating.db.po.User">
-    SELECT u.* FROM user u
+    SELECT u.* FROM User u
     JOIN UserRelationship ur ON u.user_id = ur.followed_id
     WHERE ur.follower_id = #{userId}
   </select>

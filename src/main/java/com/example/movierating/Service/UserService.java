@@ -9,11 +9,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.Builder;
 @Service
-
-
-@Builder
 public class UserService {
 
     @Resource
@@ -25,15 +21,14 @@ public class UserService {
             return null;
         }
 
-        User user = User.builder()
-                .username(username)
-                .email(email)
-                .password(hashPassword(password))
-                .profileUrl(profileUrl)
-                .bio(bio)
-                .createDate(java.sql.Timestamp.valueOf(LocalDateTime.now()))
-                .updateDate(java.sql.Timestamp.valueOf(LocalDateTime.now()))
-                .build();
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(hashPassword(password));
+        user.setProfileUrl(profileUrl);
+        user.setBio(bio);
+        user.setCreateDate(java.sql.Timestamp.valueOf(LocalDateTime.now()));
+        user.setUpdateDate(java.sql.Timestamp.valueOf(LocalDateTime.now()));
 
         userDao.insertUser(user);
         return user;

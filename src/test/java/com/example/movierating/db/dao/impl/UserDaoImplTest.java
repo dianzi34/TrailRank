@@ -24,36 +24,59 @@ class UserDaoImplTest {
 
     @BeforeEach
     void setUp() {
-
+        // Setup method - can be used for test data preparation if needed
+        // Currently using unique identifiers in each test to avoid conflicts
     }
 
     @Test
     void insertUser_ShouldSuccessfullyInsertUserAndReturnUserId() {
-        // Arrange
-        User testUser = User.builder()
-                .userId(null) // ID should be null before insertion
-                .username("testuser")
-                .email("test@example.com")
-                .password("hashedpassword")
-                .profileUrl("http://example.com/profile.jpg")
-                .bio("Test bio")
-                .createDate(java.sql.Timestamp.valueOf(LocalDateTime.now()))
-                .updateDate(java.sql.Timestamp.valueOf(LocalDateTime.now()))
-                .build();
+        // Arrange - Create a unique test user
+        String uniqueEmail = "test_" + System.currentTimeMillis() + "@example.com";
+        String uniqueUsername = "testuser_" + System.currentTimeMillis();
+        
+        User testUser = new User();
+        testUser.setUsername(uniqueUsername);
+        testUser.setEmail(uniqueEmail);
+        testUser.setPassword("hashedpassword");
+        testUser.setProfileUrl("http://example.com/profile.jpg");
+        testUser.setBio("Test bio");
+        testUser.setCreateDate(java.sql.Timestamp.valueOf(LocalDateTime.now()));
+        testUser.setUpdateDate(java.sql.Timestamp.valueOf(LocalDateTime.now()));
 
-        userDao.insertUser(testUser);
+        // Act
+        int result = userDao.insertUser(testUser);
+
+        // Assert
+        assertTrue(result > 0, "User insertion should return positive result");
+        // Verify user can be retrieved after insertion
+        User insertedUser = userDao.selectUserByEmail(uniqueEmail);
+        assertTrue(insertedUser != null, "User should exist after insertion");
+        assertTrue(insertedUser.getUserId() != null && insertedUser.getUserId() > 0, 
+                "User ID should be set after insertion");
     }
-
 
     @Test
     void getUserByEmailTest() {
-        User foundUser = userDao.selectUserByEmail("test@example.com");
+        // Arrange - First insert a test user
+        String uniqueEmail = "test_" + System.currentTimeMillis() + "@example.com";
+        String uniqueUsername = "testuser_" + System.currentTimeMillis();
+        
+        User testUser = new User();
+        testUser.setUsername(uniqueUsername);
+        testUser.setEmail(uniqueEmail);
+        testUser.setPassword("hashedpassword");
+        testUser.setCreateDate(java.sql.Timestamp.valueOf(LocalDateTime.now()));
+        testUser.setUpdateDate(java.sql.Timestamp.valueOf(LocalDateTime.now()));
+        
+        userDao.insertUser(testUser);
 
-        assertTrue(foundUser != null, "User with email test@example.com should exist");
+        // Act
+        User foundUser = userDao.selectUserByEmail(uniqueEmail);
 
-        assertTrue("test@example.com".equals(foundUser.getEmail()),
-                "Found user should have email test@example.com");
-
+        // Assert
+        assertTrue(foundUser != null, "User with email should exist");
+        assertTrue(uniqueEmail.equals(foundUser.getEmail()),
+                "Found user should have the correct email");
     }
 
 

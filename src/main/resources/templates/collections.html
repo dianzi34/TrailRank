@@ -27,29 +27,28 @@
 
   <!-- Trail list (backed by "movies" model for now) -->
   <div class="row">
-    <div th:each="movie : ${movies}" class="col-md-3 mb-4">
+    <div th:each="trail : ${trails}" class="col-md-3 mb-4">
       <div class="card movie-card">
         <div class="card-img-container">
-          <img th:src="${movie.posterUrl != null and !#strings.isEmpty(movie.posterUrl)} ?
-                  ${movie.posterUrl} :
+          <img th:src="${trail.imageUrl != null and !#strings.isEmpty(trail.imageUrl)} ?
+                  ${trail.imageUrl} :
                   @{/images/green-book.jpg}"
-               th:alt="${movie.title}"
+               th:alt="${trail.name}"
                class="img-fluid movie-poster">
         </div>
         <div class="card-body">
-          <h5 class="card-title" th:text="${movie.title}"></h5>
+          <h5 class="card-title" th:text="${trail.name}"></h5>
           <p class="card-text">
-            <!-- Make these labels more generic -->
-            <small class="text-muted" th:text="${movie.genre} ?: 'Category not specified'"></small><br>
-            <span th:text="${movie.duration != null ? movie.duration + ' min' : 'Length unknown'}"></span>
+            <small class="text-muted" th:text="${trail.scenery} ?: 'Category not specified'"></small><br>
+            <span th:text="${trail.distance != null ? trail.distance + ' km' : 'Distance unknown'}"></span>
           </p>
           <div class="d-flex justify-content-between">
-            <a th:href="@{/movies/{movieId}(movieId=${movie.movieId})}"
+            <a th:href="@{/trails/{trailId}(trailId=${trail.trailId})}"
                class="btn btn-primary btn-sm">
               Details
             </a>
             <button class="btn btn-outline-danger btn-sm"
-                    th:attr="data-movie-id=${movie.movieId}"
+                    th:attr="data-trail-id=${trail.trailId}"
                     onclick="removeFromCollection(this)">
               Remove
             </button>
@@ -59,7 +58,7 @@
     </div>
 
     <!-- Display when no trails -->
-    <div th:if="${movies.empty}" class="col-12 text-center py-5">
+    <div th:if="${trails == null or trails.empty}" class="col-12 text-center py-5">
       <i class="fas fa-mountain fa-3x text-muted mb-3"></i>
       <h4>No trails in your collection</h4>
       <p>Browse trails and add them to your collection!</p>
@@ -74,9 +73,9 @@
 
 <script>
   function removeFromCollection(button) {
-    const movieId = button.getAttribute('data-movie-id');
+    const trailId = button.getAttribute('data-trail-id');
     if (confirm('Remove this trail from your collection?')) {
-      fetch(`/api/collections/user/${userId}/movie/${movieId}`, {
+      fetch(`/api/collections/user/${userId}/trail/${trailId}`, {
         method: 'DELETE'
       })
       .then(response => {

@@ -9,9 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import lombok.Builder;
 
-//@Builder
 @Service
 public class RelationshipService {
 
