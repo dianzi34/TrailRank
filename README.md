@@ -36,19 +36,24 @@ git clone https://github.com/dianzi34/TrailRank.git
 cd TrailRank
 ```
 
-2. Configure database
+2. Create database and tables
 ```bash
-mysql -u root -p < src/main/resources/db/schema.sql
+mysql -u root -p < src/main/resources/trailrank_schema.sql
 ```
+Enter your MySQL root password when prompted.
 
-3. Update `application.properties` with your database credentials
+3. Configure database password
+   - Open `src/main/resources/application.properties`
+   - Find: `spring.datasource.password=PASSWORD123`
+   - Replace `PASSWORD123` with **your own MySQL root password**
+   - Note: This is a local database - everyone uses their own MySQL password
 
 4. Run the application
 ```bash
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
-5. Access at `http://localhost:8080`
+5. Access at `http://localhost:8082`
 
 ## 👥 Team & Responsibilities
 
