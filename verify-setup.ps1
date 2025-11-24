@@ -1,36 +1,39 @@
 # TrailRank Setup Verification Script
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "TrailRank Setup Verification" -ForegroundColor Cyan
-Write-Host "========================================`n" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
 
 # Check Java
+Write-Host ""
 Write-Host "Checking Java..." -ForegroundColor Yellow
 try {
     $javaVersion = java -version 2>&1 | Select-Object -First 1
-    Write-Host "✓ Java installed: $javaVersion" -ForegroundColor Green
+    Write-Host "Check Java installed: $javaVersion" -ForegroundColor Green
 } catch {
-    Write-Host "✗ Java not found" -ForegroundColor Red
+    Write-Host "X Java not found" -ForegroundColor Red
 }
 
 # Check Maven
-Write-Host "`nChecking Maven..." -ForegroundColor Yellow
+Write-Host ""
+Write-Host "Checking Maven..." -ForegroundColor Yellow
 try {
     $mavenVersion = mvn -version 2>&1 | Select-Object -First 1
-    Write-Host "✓ Maven installed: $mavenVersion" -ForegroundColor Green
+    Write-Host "Check Maven installed: $mavenVersion" -ForegroundColor Green
 } catch {
-    Write-Host "✗ Maven not found" -ForegroundColor Red
+    Write-Host "X Maven not found" -ForegroundColor Red
 }
 
 # Check MySQL
-Write-Host "`nChecking MySQL..." -ForegroundColor Yellow
+Write-Host ""
+Write-Host "Checking MySQL..." -ForegroundColor Yellow
 try {
     $mysqlVersion = mysql --version 2>&1
-    Write-Host "✓ MySQL installed: $mysqlVersion" -ForegroundColor Green
+    Write-Host "Check MySQL installed: $mysqlVersion" -ForegroundColor Green
 } catch {
-    Write-Host "✗ MySQL not found" -ForegroundColor Red
+    Write-Host "X MySQL not found" -ForegroundColor Red
 }
 
-Write-Host "`n========================================" -ForegroundColor Cyan
-Write-Host "If all checks passed, you're ready to continue!" -ForegroundColor Cyan
+Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
-
+Write-Host "If all checks passed, you are ready!" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
