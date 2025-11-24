@@ -219,6 +219,115 @@
 <div class="container mt-4">
     <h1 class="mb-4">Trail Collection</h1>
 
+    <!-- AI Trail Generator Panel -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-magic"></i> AI Trail Generator</h5>
+            <button class="btn btn-sm btn-light" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#aiPreferences" aria-expanded="false">
+                <i class="fas fa-sliders-h"></i> Customize
+            </button>
+        </div>
+        <div class="collapse" id="aiPreferences">
+            <div class="card-body">
+                <form id="aiPreferenceForm">
+                    <div class="row">
+                        <!-- Difficulty -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label"><i class="fas fa-signal"></i> Difficulty</label>
+                            <select class="form-select" id="difficulty">
+                                <option value="">Any</option>
+                                <option value="easy">Easy</option>
+                                <option value="moderate" selected>Moderate</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+
+                        <!-- Distance Range -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label"><i class="fas fa-ruler"></i> Distance (km)</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="number" class="form-control" id="minDistance" 
+                                           placeholder="Min" min="0" value="2" step="0.5">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" class="form-control" id="maxDistance" 
+                                           placeholder="Max" min="0" value="15" step="0.5">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Scenery Type -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label"><i class="fas fa-tree"></i> Scenery</label>
+                            <select class="form-select" id="sceneryType">
+                                <option value="">Any</option>
+                                <option value="lake">Lake</option>
+                                <option value="mountain" selected>Mountain</option>
+                                <option value="forest">Forest</option>
+                                <option value="desert">Desert</option>
+                                <option value="coastal">Coastal</option>
+                                <option value="canyon">Canyon</option>
+                            </select>
+                        </div>
+
+                        <!-- Region -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label"><i class="fas fa-map-marker-alt"></i> Region</label>
+                            <input type="text" class="form-control" id="region" 
+                                   placeholder="e.g., Colorado, Pacific Northwest">
+                        </div>
+
+                        <!-- Mood -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label"><i class="fas fa-heart"></i> Mood</label>
+                            <select class="form-select" id="mood">
+                                <option value="">Any</option>
+                                <option value="relaxing">Relaxing</option>
+                                <option value="challenging">Challenging</option>
+                                <option value="scenic">Scenic</option>
+                                <option value="adventure">Adventure</option>
+                            </select>
+                        </div>
+
+                        <!-- Free Text Description -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label"><i class="fas fa-comment"></i> Additional Details</label>
+                            <input type="text" class="form-control" id="description" 
+                                   placeholder="Waterfalls, wildlife, etc.">
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-wand-magic-sparkles"></i> Generate AI Trails
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-lg ms-2" id="resetBtn">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="text-center mb-4" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Generating personalized trails...</p>
+    </div>
+
+    <!-- Mode Indicator -->
+    <div id="modeIndicator" class="alert alert-info mb-3" style="display: none;">
+        <i class="fas fa-magic"></i> Showing AI-generated trails based on your preferences
+        <button type="button" class="btn btn-sm btn-outline-primary ms-3" id="backToDatabase">
+            <i class="fas fa-database"></i> Back to Database Trails
+        </button>
+    </div>
+
     <div th:if="${isSearch}">
         <h3>Search Results for: "<span th:text="${searchQuery}"></span>"</h3>
         <a th:href="@{/trails}" class="btn btn-secondary mb-3">
@@ -329,6 +438,138 @@
             console.log('Attempting to load:', img.dataset.filename);
         });
     });
+
+    // ============== AI Trail Generation Logic ==============
+    
+    let isAIMode = false;
+
+    document.getElementById('aiPreferenceForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Collect preferences
+        const preferences = {
+            difficulty: document.getElementById('difficulty').value,
+            minDistance: parseFloat(document.getElementById('minDistance').value) || null,
+            maxDistance: parseFloat(document.getElementById('maxDistance').value) || null,
+            sceneryType: document.getElementById('sceneryType').value,
+            region: document.getElementById('region').value,
+            mood: document.getElementById('mood').value,
+            description: document.getElementById('description').value
+        };
+
+        // Show loading indicator
+        document.getElementById('loadingIndicator').style.display = 'block';
+        document.getElementById('trails-container').style.opacity = '0.3';
+
+        try {
+            // Call AI endpoint
+            const response = await fetch('/trails/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(preferences)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to generate trails');
+            }
+
+            const trails = await response.json();
+            
+            // Display AI-generated trails
+            displayAITrails(trails);
+            isAIMode = true;
+            
+            // Show mode indicator
+            document.getElementById('modeIndicator').style.display = 'block';
+            
+            // Collapse the form
+            const collapseElement = document.getElementById('aiPreferences');
+            const collapse = bootstrap.Collapse.getInstance(collapseElement) || new bootstrap.Collapse(collapseElement);
+            collapse.hide();
+
+        } catch (error) {
+            console.error('Error generating trails:', error);
+            alert('Failed to generate trails. Please try again.');
+        } finally {
+            document.getElementById('loadingIndicator').style.display = 'none';
+            document.getElementById('trails-container').style.opacity = '1';
+        }
+    });
+
+    // Reset form
+    document.getElementById('resetBtn').addEventListener('click', function() {
+        document.getElementById('aiPreferenceForm').reset();
+        document.getElementById('difficulty').value = 'moderate';
+        document.getElementById('sceneryType').value = 'mountain';
+        document.getElementById('minDistance').value = '2';
+        document.getElementById('maxDistance').value = '15';
+    });
+
+    // Back to database trails
+    document.getElementById('backToDatabase').addEventListener('click', function() {
+        window.location.reload();
+    });
+
+    // Display AI trails
+    function displayAITrails(trails) {
+        const container = document.getElementById('trails-container');
+        container.innerHTML = '';
+
+        if (!trails || trails.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-mountain fa-3x text-muted mb-3"></i>
+                    <h4>No trails generated</h4>
+                    <p>Try adjusting your preferences</p>
+                </div>
+            `;
+            return;
+        }
+
+        trails.forEach(trail => {
+            const col = document.createElement('div');
+            col.className = 'col-md-4 col-lg-3 mb-4';
+            
+            col.innerHTML = `
+                <div class="card movie-card">
+                    <div class="card-img-container">
+                        <div class="poster-image-wrapper">
+                            <img src="${trail.imageUrl || '/images/placeholder.jpg'}" 
+                                 alt="${trail.name}" 
+                                 class="movie-poster"
+                                 onerror="this.src='/images/placeholder.jpg'"/>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">${trail.name}</h5>
+                        <p class="card-text">
+                            <small class="text-muted">${trail.location || 'Location not specified'}</small><br>
+                            <span>${trail.difficulty || 'Unknown'}</span> | 
+                            <span>${trail.distance ? trail.distance + ' km' : 'Distance unknown'}</span>
+                        </p>
+                        <div class="mb-2">
+                            <span class="badge bg-secondary">
+                                <i class="fas fa-tag"></i> ${trail.scenery || 'scenic'}
+                            </span>
+                        </div>
+                        <p class="card-text small">${trail.description || ''}</p>
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-primary btn-sm" disabled>
+                                <i class="fas fa-info-circle"></i> AI Generated
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" disabled>
+                                <i class="fas fa-star"></i> Preview
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(col);
+        });
+    }
 </script>
 </body>
 </html>

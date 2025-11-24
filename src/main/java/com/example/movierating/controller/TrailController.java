@@ -1,8 +1,10 @@
 package com.example.movierating.controller;
 
+import com.example.movierating.Service.AITrailService;
 import com.example.movierating.Service.CollectionService;
 import com.example.movierating.Service.TrailService;
 import com.example.movierating.db.po.Trail;
+import com.example.movierating.dto.TrailPreferences;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class TrailController {
 
     @Autowired
     private CollectionService collectionService;
+
+    @Autowired
+    private AITrailService aiTrailService;
 
 
     @GetMapping("/trails")
@@ -125,6 +130,20 @@ public class TrailController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    /* ============== AI Trail Generation Endpoint ============== */
+
+    @PostMapping("/trails/generate")
+    @ResponseBody
+    public ResponseEntity<List<Trail>> generateAITrails(@RequestBody TrailPreferences preferences) {
+        try {
+            List<Trail> generatedTrails = aiTrailService.generateTrails(preferences);
+            return ResponseEntity.ok(generatedTrails);
+        } catch (Exception e) {
+            System.err.println("Error generating trails: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 }
