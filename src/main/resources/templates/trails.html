@@ -442,6 +442,7 @@
     // ============== AI Trail Generation Logic ==============
     
     let isAIMode = false;
+    let aiTrailResults = [];
 
     document.getElementById('aiPreferenceForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -528,7 +529,9 @@
             return;
         }
 
-        trails.forEach(trail => {
+        aiTrailResults = trails;
+
+        trails.forEach((trail, index) => {
             const col = document.createElement('div');
             col.className = 'col-md-4 col-lg-3 mb-4';
             
@@ -556,11 +559,11 @@
                         </div>
                         <p class="card-text small">${trail.description || ''}</p>
                         <div class="d-flex justify-content-between">
-                            <button class="btn btn-primary btn-sm" disabled>
-                                <i class="fas fa-info-circle"></i> AI Generated
+                            <button class="btn btn-primary btn-sm" onclick="viewAiTrail(${index})">
+                                <i class="fas fa-info-circle"></i> Details
                             </button>
-                            <button class="btn btn-outline-secondary btn-sm" disabled>
-                                <i class="fas fa-star"></i> Preview
+                            <button class="btn btn-outline-secondary btn-sm" disabled title="Ratings available after saving trail">
+                                <i class="fas fa-star"></i> Rate
                             </button>
                         </div>
                     </div>
@@ -569,6 +572,38 @@
             
             container.appendChild(col);
         });
+    }
+
+    async function viewAiTrail(index) {
+        const trail = aiTrailResults[index];
+        if (!trail) {
+            alert('Unable to open trail details.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/trails/ai/cache', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(trail)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to prepare AI trail details');
+            }
+
+            const data = await response.json();
+            if (data && data.detailUrl) {
+                window.location.href = data.detailUrl;
+            } else {
+                throw new Error('Detail URL missing from response');
+            }
+        } catch (error) {
+            console.error('Error opening AI trail detail:', error);
+            alert('Unable to load trail details. Please try again.');
+        }
     }
 </script>
 </body>

@@ -23,11 +23,12 @@ public class AITrailService {
 
     /**
      * Generate AI trails based on user preferences
+     * Only uses real OpenAI API - no mock data fallback
      */
     public List<Trail> generateTrails(TrailPreferences preferences) {
-        // If OpenAI API key is not configured, use mock data
+        // If OpenAI API key is not configured, throw error
         if (openaiApiKey == null || openaiApiKey.isEmpty()) {
-            return generateMockTrails(preferences);
+            throw new RuntimeException("OpenAI API key is not configured");
         }
 
         try {
@@ -36,8 +37,8 @@ public class AITrailService {
             return parseAIResponse(aiResponse);
         } catch (Exception e) {
             System.err.println("Error calling OpenAI API: " + e.getMessage());
-            // Fallback to mock data
-            return generateMockTrails(preferences);
+            e.printStackTrace();
+            throw new RuntimeException("Failed to generate trails with OpenAI: " + e.getMessage());
         }
     }
 
@@ -145,7 +146,9 @@ public class AITrailService {
 
     /**
      * Generate mock trails for testing (when API key is not available)
+     * DISABLED - Not using mock data, only real OpenAI API
      */
+    /*
     private List<Trail> generateMockTrails(TrailPreferences preferences) {
         List<Trail> trails = new ArrayList<>();
         Random random = new Random();
@@ -192,6 +195,7 @@ public class AITrailService {
         
         return trails;
     }
+    */
 
     /**
      * Map scenery category to image path

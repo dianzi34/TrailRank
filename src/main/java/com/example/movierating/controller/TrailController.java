@@ -14,7 +14,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Controller
 public class TrailController {
@@ -27,6 +31,8 @@ public class TrailController {
 
     @Autowired
     private AITrailService aiTrailService;
+
+    private static final String AI_TRAIL_SESSION_KEY = "AI_TRAILS_CACHE";
 
 
     @GetMapping("/trails")
@@ -47,6 +53,7 @@ public class TrailController {
         model.addAttribute("isSearch", false);
 
         model.addAttribute("username", session.getAttribute("username"));
+        model.addAttribute("isAiTrail", false);
 
         return "trails";
     }
@@ -91,6 +98,7 @@ public class TrailController {
         model.addAttribute("userId", session.getAttribute("userId"));
         boolean inCollection = collectionService.hasUserCollectedTrail(userId, id);
         model.addAttribute("inCollection", inCollection);
+        model.addAttribute("isAiTrail", false);
 
         return "trail-detail";
     }
@@ -130,6 +138,86 @@ public class TrailController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    /* ============== AI Trail Detail Support ============== */
+
+    @PostMapping("/trails/ai/cache")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> cacheAiTrailForDetail(@RequestBody Trail trail, HttpSession session) {
+        if (trail == null || trail.getName() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Map<String, Trail> aiTrailCache = getAiTrailCache(session);
+
+        String token = UUID.randomUUID().toString();
+        aiTrailCache.put(token, trail);
+        session.setAttribute(AI_TRAIL_SESSION_KEY, aiTrailCache);
+
+        return ResponseEntity.ok(Map.of("detailUrl", "/trails/ai/" + token));
+    }
+
+    @GetMapping("/trails/ai/{token}")
+    public String viewCachedAiTrail(@PathVariable String token, Model model, HttpSession session) {
+        if (session.getAttribute("userEmail") == null) {
+            return "redirect:/login";
+        }
+
+        Map<String, Trail> aiTrailCache = getAiTrailCache(session);
+        if (!aiTrailCache.containsKey(token)) {
+            return "redirect:/trails";
+        }
+
+        Trail trail = aiTrailCache.get(token);
+        model.addAttribute("trail", trail);
+        model.addAttribute("isAiTrail", true);
+        model.addAttribute("aiToken", token);
+        model.addAttribute("username", session.getAttribute("username"));
+        model.addAttribute("userId", session.getAttribute("userId"));
+        model.addAttribute("inCollection", false);
+
+        return "trail-detail";
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Trail> getAiTrailCache(HttpSession session) {
+        Map<String, Trail> cache = (Map<String, Trail>) session.getAttribute(AI_TRAIL_SESSION_KEY);
+        if (cache == null) {
+            cache = new HashMap<>();
+            session.setAttribute(AI_TRAIL_SESSION_KEY, cache);
+        }
+        return cache;
+    }
+
+    @PostMapping("/trails/ai/{token}/save")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> saveAiTrail(@PathVariable String token, HttpSession session) {
+        if (session.getAttribute("userEmail") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Map<String, Trail> cache = getAiTrailCache(session);
+        Trail aiTrail = cache.get(token);
+        if (aiTrail == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Date now = new Date();
+        aiTrail.setTrailId(null);
+        aiTrail.setCreateDate(now);
+        aiTrail.setUpdateDate(now);
+
+        int result = trailService.addTrail(aiTrail);
+        if (result > 0 && aiTrail.getTrailId() != null) {
+            cache.remove(token);
+            Map<String, Object> response = new HashMap<>();
+            response.put("trailId", aiTrail.getTrailId());
+            response.put("detailUrl", "/trails/" + aiTrail.getTrailId());
+            return ResponseEntity.ok(response);
+        }
+
+        return ResponseEntity.internalServerError().build();
     }
 
     /* ============== AI Trail Generation Endpoint ============== */

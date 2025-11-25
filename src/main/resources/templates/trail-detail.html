@@ -29,6 +29,20 @@
 </nav>
 
 <div class="container mt-4">
+    <div th:if="${isAiTrail}"
+         id="aiTrailMeta"
+         th:data-token="${aiToken}"
+         class="alert alert-info d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fas fa-magic"></i>
+            <span>This is an AI-generated trail preview. Save it to enable ratings, collections, and sharing.</span>
+        </div>
+        <div class="d-flex gap-2">
+            <button id="saveAiTrailBtn" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save to My Trails
+            </button>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-4">
             <img th:src="${trail.imageUrl != null && !#strings.isEmpty(trail.imageUrl)} ?
@@ -47,7 +61,7 @@
             <p class="lead"><strong>Location:</strong> <span th:text="${trail.location}"></span></p>
             <p class="lead" th:text="${trail.description}"></p>
 
-            <div class="mt-4">
+            <div class="mt-4" th:if="${!isAiTrail}">
                 <h4>Trail Details</h4>
                 <ul class="list-unstyled">
                     <li><strong>Location:</strong> <span th:text="${trail.location}"></span></li>
@@ -57,8 +71,13 @@
                     <li><strong>Average Rating:</strong> <span id="avgRating">-</span>/10</li>
                 </ul>
             </div>
+            <div class="mt-3" th:if="${isAiTrail}">
+                <div class="alert alert-warning mb-0">
+                    <i class="fas fa-info-circle"></i> Save this trail to enable collections, ratings, and reviews.
+                </div>
+            </div>
 
-            <div class="mt-4">
+            <div class="mt-4" th:if="${!isAiTrail}">
                 <button th:if="${inCollection}" class="btn btn-secondary" disabled>
                     <i class="fas fa-check"></i> Already in Collection
                 </button>
@@ -70,61 +89,64 @@
         </div>
     </div>
 
-    <hr class="my-4">
+    <hr class="my-4" th:if="${!isAiTrail}">
 
-    <!-- Summary-only view when ?view=rating -->
-    <div th:if="${param.view != null && param.view[0] == 'rating'}" class="row mt-4">
-        <div class="col-12 text-center">
-            <h2>Rating Summary</h2>
-            <div style="width: 120px; height: 120px; border-radius: 50%; background-color: #f8f9fa; border: 3px solid #4a6bff; display: flex; align-items: center; justify-content: center; margin: 0 auto; margin-top: 20px;">
-                <span id="ratingCircle" style="font-size: 36px; font-weight: bold;">-</span><span style="font-size: 18px; font-weight: bold;">/10</span>
+    <div th:if="${!isAiTrail}">
+        <!-- Summary-only view when ?view=rating -->
+        <div th:if="${param.view != null && param.view[0] == 'rating'}" class="row mt-4">
+            <div class="col-12 text-center">
+                <h2>Rating Summary</h2>
+                <div style="width: 120px; height: 120px; border-radius: 50%; background-color: #f8f9fa; border: 3px solid #4a6bff; display: flex; align-items: center; justify-content: center; margin: 0 auto; margin-top: 20px;">
+                    <span id="ratingCircle" style="font-size: 36px; font-weight: bold;">-</span><span style="font-size: 18px; font-weight: bold;">/10</span>
+                </div>
+                <div style="margin-top: 20px; color: #ffc107; font-size: 24px;">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                </div>
+                <p class="text-muted mt-3">Based on user reviews</p>
             </div>
-            <div style="margin-top: 20px; color: #ffc107; font-size: 24px;">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="far fa-star"></i>
-            </div>
-            <p class="text-muted mt-3">Based on user reviews</p>
         </div>
-    </div>
 
-    <!-- Full rating form + reviews when not in summary view -->
-    <div th:unless="${param.view != null && param.view[0] == 'rating'}" class="row mt-4">
-        <div class="col-md-6">
-            <h4>Rate This Trail</h4>
-            <form id="ratingForm" class="border p-3 rounded">
-                <div class="mb-3">
-                    <label class="form-label">Your Rating (1–10)</label>
-                    <select id="score" class="form-select" required>
-                        <option value="">Select rating</option>
-                        <option th:each="i : ${#numbers.sequence(1, 10)}"
-                                th:value="${i}"
-                                th:text="${i}"></option>
-                    </select>
+        <!-- Full rating form + reviews when not in summary view -->
+        <div th:unless="${param.view != null && param.view[0] == 'rating'}" class="row mt-4">
+            <div class="col-md-6">
+                <h4>Rate This Trail</h4>
+                <form id="ratingForm" class="border p-3 rounded">
+                    <div class="mb-3">
+                        <label class="form-label">Your Rating (1–10)</label>
+                        <select id="score" class="form-select" required>
+                            <option value="">Select rating</option>
+                            <option th:each="i : ${#numbers.sequence(1, 10)}"
+                                    th:value="${i}"
+                                    th:text="${i}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Your Review</label>
+                        <textarea id="comment" class="form-control" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-star"></i> Submit Rating
+                    </button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <h4>User Reviews</h4>
+                <div id="ratingList" class="list-group" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Ratings will be loaded here -->
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Your Review</label>
-                    <textarea id="comment" class="form-control" rows="3"></textarea>
-                </div>
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-star"></i> Submit Rating
-                </button>
-            </form>
-        </div>
-        <div class="col-md-6">
-            <h4>User Reviews</h4>
-            <div id="ratingList" class="list-group" style="max-height: 400px; overflow-y: auto;">
-                <!-- Ratings will be loaded here -->
             </div>
         </div>
     </div>
 </div>
 
 <script th:inline="javascript">
-    const trailId = [[${trail.trailId}]];
-    const userId = [[${session.userId}]];
+    const trailId = [[${trail.trailId} != null ? trail.trailId : -1]];
+    const userId = [[${session.userId} != null ? session.userId : -1]];
+    const isAiTrail = [[${isAiTrail} != null ? isAiTrail : false]];
 
     console.log('Trail ID:', trailId);
     console.log('User ID:', userId);
@@ -289,7 +311,60 @@
             });
     }
 
+    async function saveAiTrail(buttonEl) {
+        const metaEl = document.getElementById('aiTrailMeta');
+        const token = metaEl ? metaEl.dataset.token : null;
+        if (!token) {
+            alert('Unable to save this trail. Please refresh and try again.');
+            return;
+        }
+
+        try {
+            buttonEl.disabled = true;
+            const originalText = buttonEl.innerHTML;
+            buttonEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            const response = await fetch(`/trails/ai/${token}/save`, {
+                method: 'POST'
+            });
+
+            if (response.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error('Failed to save trail');
+            }
+
+            const data = await response.json();
+            if (data && data.detailUrl) {
+                window.location.href = data.detailUrl;
+            } else if (data.trailId) {
+                window.location.href = `/trails/${data.trailId}`;
+            } else {
+                throw new Error('Trail saved but detail URL missing');
+            }
+        } catch (error) {
+            console.error('Error saving AI trail:', error);
+            alert('Could not save this trail. Please try again.');
+            buttonEl.disabled = false;
+            buttonEl.innerHTML = '<i class="fas fa-save"></i> Save to My Trails';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
+        if (isAiTrail) {
+            console.log('AI-generated trail view detected. Ratings and collections disabled until saved.');
+            const saveBtn = document.getElementById('saveAiTrailBtn');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', function() {
+                    saveAiTrail(saveBtn);
+                });
+            }
+            return;
+        }
+
         // Only attach submit handler if the form exists (i.e., not in summary-only view)
         const ratingForm = document.getElementById('ratingForm');
         if (ratingForm) {
