@@ -205,16 +205,16 @@ public class AITrailService {
         if (scenery == null) scenery = "mountain";
         scenery = scenery.toLowerCase().trim();
         
-        // Use Unsplash for consistent, beautiful images
+        // Use local curated images for consistent look & offline support
         Map<String, String> imageMap = new HashMap<>();
-        imageMap.put("lake", "https://source.unsplash.com/800x1200/?lake,hiking");
-        imageMap.put("mountain", "https://source.unsplash.com/800x1200/?mountain,hiking");
-        imageMap.put("forest", "https://source.unsplash.com/800x1200/?forest,hiking");
-        imageMap.put("desert", "https://source.unsplash.com/800x1200/?desert,hiking");
-        imageMap.put("coastal", "https://source.unsplash.com/800x1200/?coastal,beach");
-        imageMap.put("canyon", "https://source.unsplash.com/800x1200/?canyon,hiking");
-        
-        return imageMap.getOrDefault(scenery, "https://source.unsplash.com/800x1200/?mountain,hiking");
+        imageMap.put("lake", "/images/category/lake.jpg");
+        imageMap.put("mountain", "/images/category/mountain.webp");
+        imageMap.put("forest", "/images/category/forest.webp");
+        imageMap.put("desert", "/images/category/desert.jpg");
+        imageMap.put("coastal", "/images/category/coastal.jpg");
+        imageMap.put("canyon", "/images/category/canyon.jpg");
+
+        return imageMap.getOrDefault(scenery, "/images/category/mountain.webp");
     }
 }
 

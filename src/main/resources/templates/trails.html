@@ -532,6 +532,12 @@
         aiTrailResults = trails;
 
         trails.forEach((trail, index) => {
+            const imageUrl = trail.imageUrl || trail.image_url || '/images/placeholder.jpg';
+            const difficulty = trail.difficulty || trail.difficulty_text || 'Unknown';
+            const distanceValue = trail.distance ?? trail.distance_km ?? trail.distanceKm;
+            const distanceText = distanceValue ? `${distanceValue} km` : 'Distance unknown';
+            const scenery = trail.scenery || trail.scenery_type || 'scenic';
+
             const col = document.createElement('div');
             col.className = 'col-md-4 col-lg-3 mb-4';
             
@@ -539,7 +545,7 @@
                 <div class="card movie-card">
                     <div class="card-img-container">
                         <div class="poster-image-wrapper">
-                            <img src="${trail.imageUrl || '/images/placeholder.jpg'}" 
+                            <img src="${imageUrl}" 
                                  alt="${trail.name}" 
                                  class="movie-poster"
                                  onerror="this.src='/images/placeholder.jpg'"/>
@@ -549,12 +555,12 @@
                         <h5 class="card-title">${trail.name}</h5>
                         <p class="card-text">
                             <small class="text-muted">${trail.location || 'Location not specified'}</small><br>
-                            <span>${trail.difficulty || 'Unknown'}</span> | 
-                            <span>${trail.distance ? trail.distance + ' km' : 'Distance unknown'}</span>
+                            <span>${difficulty}</span> | 
+                            <span>${distanceText}</span>
                         </p>
                         <div class="mb-2">
                             <span class="badge bg-secondary">
-                                <i class="fas fa-tag"></i> ${trail.scenery || 'scenic'}
+                                <i class="fas fa-tag"></i> ${scenery}
                             </span>
                         </div>
                         <p class="card-text small">${trail.description || ''}</p>
