@@ -362,16 +362,17 @@
                     saveAiTrail(saveBtn);
                 });
             }
-            return;
         }
 
-        // Only attach submit handler if the form exists (i.e., not in summary-only view)
-        const ratingForm = document.getElementById('ratingForm');
-        if (ratingForm) {
-            ratingForm.addEventListener('submit', submitRating);
-        }
+        if (!isAiTrail) {
+            // Only attach submit handler if the form exists (i.e., not in summary-only view)
+            const ratingForm = document.getElementById('ratingForm');
+            if (ratingForm) {
+                ratingForm.addEventListener('submit', submitRating);
+            }
 
-        loadRatings();
+            loadRatings();
+        }
     });
 </script>
 </body>
