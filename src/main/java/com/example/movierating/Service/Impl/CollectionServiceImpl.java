@@ -64,4 +64,9 @@ public class CollectionServiceImpl implements CollectionService {
     public List<Collection> getUserCollectionByType(Integer userId, String collectionType) {
         return collectionDao.getCollectionsByUserIdAndType(userId, collectionType);
     }
+
+    @Override
+    public Collection getCollectionByUserIdAndTrailId(Integer userId, Integer trailId) {
+        return collectionDao.getCollectionByUserIdAndTrailId(userId, trailId);
+    }
 }

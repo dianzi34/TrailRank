@@ -74,7 +74,6 @@ public class TrailController {
         return "trails";
     }
 
-
     @GetMapping("/trails/{id}")
     public String getTrailDetails(@PathVariable Integer id,
         Model model,
@@ -94,14 +93,22 @@ public class TrailController {
         Integer userId = (Integer) session.getAttribute("userId");
         model.addAttribute("trail", trail);
         model.addAttribute("username", session.getAttribute("username"));
-
         model.addAttribute("userId", session.getAttribute("userId"));
-        boolean inCollection = collectionService.hasUserCollectedTrail(userId, id);
+
+        // 获取 collection 信息，包括类型
+        com.example.movierating.db.po.Collection collection =
+            collectionService.getCollectionByUserIdAndTrailId(userId, id);
+
+        boolean inCollection = (collection != null);
+        String collectionType = (collection != null) ? collection.getCollectionType() : null;
+
         model.addAttribute("inCollection", inCollection);
+        model.addAttribute("collectionType", collectionType);  // 添加这行
         model.addAttribute("isAiTrail", false);
 
         return "trail-detail";
     }
+
 
 
 

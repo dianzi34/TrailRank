@@ -43,4 +43,12 @@ public interface CollectionService {
      * @return List of collections
      */
     List<Collection> getUserCollectionByType(Integer userId, String collectionType);
+
+    /**
+     * Get user's collection for a specific trail
+     * @param userId User ID
+     * @param trailId Trail ID
+     * @return Collection record, or null if not exists
+     */
+    Collection getCollectionByUserIdAndTrailId(Integer userId, Integer trailId);  // 添加这个方法
 }

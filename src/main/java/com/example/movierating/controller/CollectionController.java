@@ -28,23 +28,63 @@ public class CollectionController {
     }
 
 
-    @PostMapping("/add")
-    public ResponseEntity<Collection> addToCollection(@RequestBody Map<String, Object> request) {
-        Integer userId = (Integer) request.get("user_id");
-        Integer trailId = (Integer) request.get("trail_id");
-        String collectionType = (String) request.get("collection_type");
+//    @PostMapping("/add")
+//    public ResponseEntity<Collection> addToCollection(@RequestBody Map<String, Object> request) {
+//        Integer userId = (Integer) request.get("user_id");
+//        Integer trailId = (Integer) request.get("trail_id");
+//        String collectionType = (String) request.get("collection_type");
+//
+//        if (userId == null || trailId == null) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//
+//        // Default to "Wish-to-Hike" if collectionType is not provided
+//        if (collectionType == null || collectionType.isEmpty()) {
+//            collectionType = "Wish-to-Hike";
+//        }
+//
+//        Collection collection = collectionService.addTrailToUserCollection(userId, trailId, collectionType);
+//        return new ResponseEntity<>(collection, HttpStatus.CREATED);
+//    }
+@PostMapping("/add")
+public ResponseEntity<Collection> addToCollection(@RequestBody Map<String, Object> request) {
+    // 安全地转换，处理 String 和 Integer 两种情况
+    Integer userId = convertToInteger(request.get("user_id"));
+    Integer trailId = convertToInteger(request.get("trail_id"));
+    String collectionType = (String) request.get("collection_type");
 
-        if (userId == null || trailId == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    if (userId == null || trailId == null) {
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    // Default to "Wish-to-Hike" if collectionType is not provided
+    if (collectionType == null || collectionType.isEmpty()) {
+        collectionType = "Wish-to-Hike";
+    }
+
+    Collection collection = collectionService.addTrailToUserCollection(userId, trailId, collectionType);
+    return new ResponseEntity<>(collection, HttpStatus.CREATED);
+}
+
+    // 添加这个辅助方法到 CollectionController 类中
+    private Integer convertToInteger(Object value) {
+        if (value == null) {
+            return null;
         }
-
-        // Default to "Wish-to-Hike" if collectionType is not provided
-        if (collectionType == null || collectionType.isEmpty()) {
-            collectionType = "Wish-to-Hike";
+        if (value instanceof Integer) {
+            return (Integer) value;
         }
-
-        Collection collection = collectionService.addTrailToUserCollection(userId, trailId, collectionType);
-        return new ResponseEntity<>(collection, HttpStatus.CREATED);
+        if (value instanceof String) {
+            try {
+                return Integer.parseInt((String) value);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        return null;
     }
 
 

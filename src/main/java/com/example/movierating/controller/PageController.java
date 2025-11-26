@@ -29,40 +29,63 @@ public class PageController {
   public String showCollectionPage(Model model, HttpSession session) {
     Integer userId = (Integer) session.getAttribute("userId");
     if (userId == null) {
-      return "redirect:/login";
+        return "redirect:/login";
     }
 
     try {
-    // get user's collections
-    List<Collection> collections = collectionService.getUserCollection(userId);
-      if (collections == null) {
-        collections = new ArrayList<>();
-      }
+        // 分别获取两种类型的 collections
+        List<Collection> wishToHikeCollections = collectionService.getUserCollectionByType(userId, "Wish-to-Hike");
+        List<Collection> hikedCollections = collectionService.getUserCollectionByType(userId, "Hiked");
 
-      List<Trail> trails = new ArrayList<>();
-      if (collections != null && !collections.isEmpty()) {
-        trails = collections.stream()
-            .map(c -> {
-              try {
-                return trailService.getTrailById(c.getTrailId());
-              } catch (Exception e) {
-                System.err.println("Error getting trail " + c.getTrailId() + ": " + e.getMessage());
-                return null;
-              }
-            })
-        .filter(Objects::nonNull)
-            .collect(java.util.stream.Collectors.toList());
-      }
+        if (wishToHikeCollections == null) {
+            wishToHikeCollections = new ArrayList<>();
+        }
+        if (hikedCollections == null) {
+            hikedCollections = new ArrayList<>();
+        }
 
-    model.addAttribute("trails", trails);
-    model.addAttribute("collections", collections);
-    model.addAttribute("userId", userId);
-    return "collections";
+        // 获取 Wish-to-Hike 的 trails
+        List<Trail> wishToHikeTrails = new ArrayList<>();
+        if (!wishToHikeCollections.isEmpty()) {
+            wishToHikeTrails = wishToHikeCollections.stream()
+                .map(c -> {
+                    try {
+                        return trailService.getTrailById(c.getTrailId());
+                    } catch (Exception e) {
+                        System.err.println("Error getting trail " + c.getTrailId() + ": " + e.getMessage());
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(java.util.stream.Collectors.toList());
+        }
+
+        // 获取 Hiked 的 trails
+        List<Trail> hikedTrails = new ArrayList<>();
+        if (!hikedCollections.isEmpty()) {
+            hikedTrails = hikedCollections.stream()
+                .map(c -> {
+                    try {
+                        return trailService.getTrailById(c.getTrailId());
+                    } catch (Exception e) {
+                        System.err.println("Error getting trail " + c.getTrailId() + ": " + e.getMessage());
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(java.util.stream.Collectors.toList());
+        }
+
+        model.addAttribute("wishToHikeTrails", wishToHikeTrails);
+        model.addAttribute("hikedTrails", hikedTrails);
+        model.addAttribute("userId", userId);
+        return "collections";
     } catch (Exception e) {
-      System.err.println("Error loading collections: " + e.getMessage());
-      e.printStackTrace();
-      model.addAttribute("error", "Error loading collections: " + e.getMessage());
-      return "error";
+        System.err.println("Error loading collections: " + e.getMessage());
+        e.printStackTrace();
+        model.addAttribute("error", "Error loading collections: " + e.getMessage());
+        return "error";
     }
-  }
+    }
+
 }

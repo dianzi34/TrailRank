@@ -76,16 +76,45 @@
                     <i class="fas fa-info-circle"></i> Save this trail to enable collections, ratings, and reviews.
                 </div>
             </div>
+          <div class="mt-4" th:if="${!isAiTrail}">
+            <!-- If already in collection, show current type -->
+            <div th:if="${inCollection}">
+              <button th:if="${collectionType == 'Wish-to-Hike'}"
+                      class="btn btn-outline-primary"
+                      th:onclick="'addToCollection(' + ${trail.trailId} + ', \'Wish-to-Hike\')'">
+                <i class="fas fa-heart"></i> In Wish List
+              </button>
+              <button th:if="${collectionType == 'Wish-to-Hike'}"
+                      class="btn btn-success"
+                      th:onclick="'addToCollection(' + ${trail.trailId} + ', \'Hiked\')'">
+                <i class="fas fa-check-circle"></i> Mark as Hiked
+              </button>
 
-            <div class="mt-4" th:if="${!isAiTrail}">
-                <button th:if="${inCollection}" class="btn btn-secondary" disabled>
-                    <i class="fas fa-check"></i> Already in Collection
-                </button>
-                <button th:unless="${inCollection}" class="btn btn-primary"
-                        th:onclick="'addToCollection(' + ${trail.trailId} + ')'">
-                    <i class="fas fa-bookmark"></i> Add to Collection
-                </button>
+              <button th:if="${collectionType == 'Hiked'}"
+                      class="btn btn-outline-success"
+                      th:onclick="'addToCollection(' + ${trail.trailId} + ', \'Hiked\')'">
+                <i class="fas fa-check-circle"></i> Hiked
+              </button>
+              <button th:if="${collectionType == 'Hiked'}"
+                      class="btn btn-primary"
+                      th:onclick="'addToCollection(' + ${trail.trailId} + ', \'Wish-to-Hike\')'">
+                <i class="fas fa-heart"></i> Move to Wish List
+              </button>
             </div>
+
+            <!-- If not in collection, show both options -->
+            <div th:unless="${inCollection}">
+              <button class="btn btn-primary me-2"
+                      th:onclick="'addToCollection(' + ${trail.trailId} + ', \'Wish-to-Hike\')'">
+                <i class="fas fa-heart"></i> Add to Wish List
+              </button>
+              <button class="btn btn-success"
+                      th:onclick="'addToCollection(' + ${trail.trailId} + ', \'Hiked\')'">
+                <i class="fas fa-check-circle"></i> Mark as Hiked
+              </button>
+            </div>
+          </div>
+
         </div>
     </div>
 
@@ -145,13 +174,13 @@
 
 <script th:inline="javascript">
     const trailId = [[${trail.trailId} != null ? trail.trailId : -1]];
-    const userId = [[${session.userId} != null ? session.userId : -1]];
+    const userId = [[${userId} != null ? ${userId} : -1]];  // 改这里
     const isAiTrail = [[${isAiTrail} != null ? isAiTrail : false]];
 
     console.log('Trail ID:', trailId);
     console.log('User ID:', userId);
 
-    function addToCollection(trailId) {
+    function addToCollection(trailId, collectionType) {
         if (!userId) {
             alert('Please log in to add this trail to your collection.');
             return;
@@ -160,12 +189,16 @@
         fetch(`/api/collections/add`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ trail_id: trailId, user_id: userId })
+            body: JSON.stringify({
+                trail_id: trailId,
+                user_id: userId,
+                collection_type: collectionType
+            })
         })
         .then(response => {
             console.log('Add to collection response status:', response.status);
             if (response.ok) {
-                location.reload(); // Reload to show "Already in Collection"
+                location.reload(); // Reload to update button state
             } else {
                 throw new Error('Failed to add to collection.');
             }
