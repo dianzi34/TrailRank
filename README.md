@@ -9,10 +9,11 @@ TrailRank helps outdoor enthusiasts discover trails, track their hiking progress
 ## ✨ Features
 
 - **Trail Discovery**: Browse and search trails by difficulty, scenery, and location
-- **Progress Tracking**: Track total distance, earn milestones and badges
+- **AI Trail Generator**: Generate personalized trail recommendations using OpenAI GPT-3.5
 - **Collections**: Maintain "Wish-to-Hike" and "Completed" trail lists
-- **Reviews & Ratings**: Rate trails and share experiences with the community
-- **Offline Access**: Export trail guides as PDFs for use without internet
+- **Reviews & Ratings**: Rate trails (1-10 scale) and share experiences with the community
+- **User Profiles**: Follow other users, view followers and following lists
+- **Social Features**: Build connections with other hikers
 
 ## 🛠️ Tech Stack
 
@@ -47,13 +48,14 @@ Enter your MySQL root password when prompted.
    - Find: `spring.datasource.password=PASSWORD123`
    - Replace `PASSWORD123` with **your own MySQL root password**
    - Note: This is a local database - everyone uses their own MySQL password
+   - Note: OpenAI API key is already configured for AI Trail Generator feature
 
 4. Run the application
 ```bash
 ./mvnw spring-boot:run
 ```
 
-5. Access at `http://localhost:8082`
+6. Access at `http://localhost:8082`
 
 ## 👥 Team & Responsibilities
 
