@@ -9,19 +9,23 @@
     <result column="scenery" jdbcType="VARCHAR" property="scenery" />
     <result column="distance" jdbcType="DECIMAL" property="distance" />
     <result column="image_url" jdbcType="VARCHAR" property="imageUrl" />
+    <result column="map_image" jdbcType="VARCHAR" property="mapImage" />
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
     <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
   </resultMap>
+
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.example.movierating.db.po.Trail">
     <result column="description" jdbcType="LONGVARCHAR" property="description" />
   </resultMap>
+
   <sql id="Base_Column_List">
-    trail_id, name, location, difficulty, scenery, distance, image_url, create_date,
-    update_date
+    trail_id, name, location, difficulty, scenery, distance, image_url, map_image, create_date, update_date
   </sql>
+
   <sql id="Blob_Column_List">
     description
   </sql>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
     select
     <include refid="Base_Column_List" />
@@ -30,6 +34,7 @@
     from Trail
     where trail_id = #{trailId,jdbcType=INTEGER}
   </select>
+
   <select id="selectTrails" resultMap="ResultMapWithBLOBs">
     select
     <include refid="Base_Column_List" />
@@ -38,6 +43,7 @@
     from Trail
     LIMIT #{limit} OFFSET #{offset}
   </select>
+
   <select id="searchTrails" resultMap="ResultMapWithBLOBs">
     SELECT
     <include refid="Base_Column_List" />
@@ -57,6 +63,7 @@
     name ASC
     LIMIT 50
   </select>
+
   <select id="selectByName" resultMap="ResultMapWithBLOBs">
     select
     <include refid="Base_Column_List" />
@@ -65,18 +72,20 @@
     from Trail
     where name = #{name,jdbcType=VARCHAR}
   </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from Trail
     where trail_id = #{trailId,jdbcType=INTEGER}
   </delete>
+
   <insert id="insert" parameterType="com.example.movierating.db.po.Trail" useGeneratedKeys="true" keyProperty="trailId">
-    insert into Trail (trail_id, name, location,
-    difficulty, scenery, distance, image_url, create_date,
-    update_date, description)
+    insert into Trail (trail_id, name, location, difficulty, scenery, distance, image_url, map_image, create_date, update_date, description)
     values (#{trailId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR},
-    #{difficulty,jdbcType=VARCHAR}, #{scenery,jdbcType=VARCHAR}, #{distance,jdbcType=DECIMAL}, #{imageUrl,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP},
+    #{difficulty,jdbcType=VARCHAR}, #{scenery,jdbcType=VARCHAR}, #{distance,jdbcType=DECIMAL},
+    #{imageUrl,jdbcType=VARCHAR}, #{mapImage,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP},
     #{updateDate,jdbcType=TIMESTAMP}, #{description,jdbcType=LONGVARCHAR})
   </insert>
+
   <insert id="insertSelective" parameterType="com.example.movierating.db.po.Trail" useGeneratedKeys="true" keyProperty="trailId">
     insert into Trail
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -100,6 +109,9 @@
       </if>
       <if test="imageUrl != null">
         image_url,
+      </if>
+      <if test="mapImage != null">
+        map_image,
       </if>
       <if test="createDate != null">
         create_date,
@@ -133,6 +145,9 @@
       <if test="imageUrl != null">
         #{imageUrl,jdbcType=VARCHAR},
       </if>
+      <if test="mapImage != null">
+        #{mapImage,jdbcType=VARCHAR},
+      </if>
       <if test="createDate != null">
         #{createDate,jdbcType=TIMESTAMP},
       </if>
@@ -144,6 +159,7 @@
       </if>
     </trim>
   </insert>
+
   <update id="updateByPrimaryKeySelective" parameterType="com.example.movierating.db.po.Trail">
     update Trail
     <set>
@@ -165,6 +181,9 @@
       <if test="imageUrl != null">
         image_url = #{imageUrl,jdbcType=VARCHAR},
       </if>
+      <if test="mapImage != null">
+        map_image = #{mapImage,jdbcType=VARCHAR},
+      </if>
       <if test="createDate != null">
         create_date = #{createDate,jdbcType=TIMESTAMP},
       </if>
@@ -177,6 +196,7 @@
     </set>
     where trail_id = #{trailId,jdbcType=INTEGER}
   </update>
+
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.example.movierating.db.po.Trail">
     update Trail
     set name = #{name,jdbcType=VARCHAR},
@@ -185,11 +205,13 @@
     scenery = #{scenery,jdbcType=VARCHAR},
     distance = #{distance,jdbcType=DECIMAL},
     image_url = #{imageUrl,jdbcType=VARCHAR},
+    map_image = #{mapImage,jdbcType=VARCHAR},
     create_date = #{createDate,jdbcType=TIMESTAMP},
     update_date = #{updateDate,jdbcType=TIMESTAMP},
     description = #{description,jdbcType=LONGVARCHAR}
     where trail_id = #{trailId,jdbcType=INTEGER}
   </update>
+
   <update id="updateByPrimaryKey" parameterType="com.example.movierating.db.po.Trail">
     update Trail
     set name = #{name,jdbcType=VARCHAR},
@@ -198,9 +220,9 @@
     scenery = #{scenery,jdbcType=VARCHAR},
     distance = #{distance,jdbcType=DECIMAL},
     image_url = #{imageUrl,jdbcType=VARCHAR},
+    map_image = #{mapImage,jdbcType=VARCHAR},
     create_date = #{createDate,jdbcType=TIMESTAMP},
     update_date = #{updateDate,jdbcType=TIMESTAMP}
     where trail_id = #{trailId,jdbcType=INTEGER}
   </update>
 </mapper>
-

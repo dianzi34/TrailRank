@@ -1,304 +1,386 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${user != null ? user.username + ' | Profile' : 'User Profile'}">User Profile</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" th:href="@{/images/icon.png}" type="image/png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${user != null ? user.username + ' | Profile' : 'User Profile'}">User Profile</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" th:href="@{/images/icon.png}" type="image/png">
 
-    <style>
-        .navbar-custom {
-            background-color: #343a40;
-            padding: 0.75rem 1rem;
-        }
-        .navbar-brand {
-            font-weight: 600;
-            font-size: 1.25rem;
-        }
-        .search-box {
-            width: 300px;
-        }
+  <style>
+    .navbar-custom {
+        background-color: #343a40;
+        padding: 0.75rem 1rem;
+    }
+    .navbar-brand {
+        font-weight: 600;
+        font-size: 1.25rem;
+    }
+    .search-box {
+        width: 300px;
+    }
 
-        .profile-card {
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            margin-top: 2rem;
-        }
-        .profile-header {
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            padding: 2rem;
-            color: white;
-            text-align: center;
-        }
-        .profile-pic {
-            width: 120px;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 4px solid white;
-            margin-bottom: 1rem;
-        }
-        .info-label {
-            font-weight: 600;
-            color: #6c757d;
-        }
-        .relationship-card {
-            margin-top: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .relationship-card .card-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            font-weight: 500;
-        }
-        .user-list-item {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1.25rem;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            text-decoration: none;
-            color: inherit;
-        }
-        .user-list-item:last-child {
-            border-bottom: none;
-        }
-        .user-list-item:hover {
-            background-color: #f8f9fa;
-        }
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 12px;
-        }
-        .empty-message {
-            color: #6c757d;
-            font-style: italic;
-        }
-        .btn-follow {
-            transition: all 0.3s ease;
-            min-width: 100px;
-        }
-        .btn-following {
-            background-color: #6c757d;
-            color: white;
-        }
-    </style>
+    .profile-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        margin-top: 2rem;
+    }
+    .profile-header {
+        background: linear-gradient(135deg, #6e8efb, #a777e3);
+        padding: 2rem;
+        color: white;
+        text-align: center;
+    }
+    .profile-pic {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid white;
+        margin-bottom: 1rem;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+    }
+    .relationship-card {
+        margin-top: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .relationship-card .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        font-weight: 500;
+    }
+    .user-list-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1.25rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        text-decoration: none;
+        color: inherit;
+    }
+    .user-list-item:last-child {
+        border-bottom: none;
+    }
+    .user-list-item:hover {
+        background-color: #f8f9fa;
+    }
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 12px;
+    }
+    .empty-message {
+        color: #6c757d;
+        font-style: italic;
+    }
+    .btn-follow {
+        transition: all 0.3s ease;
+        min-width: 100px;
+    }
+    .btn-following {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .stats-card h3 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .stats-card p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+
+    .badges-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+
+    .badge-item {
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .badge-item:hover {
+        transform: scale(1.1);
+    }
+
+    .badge-image {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        margin-bottom: 0.5rem;
+    }
+
+    .badge-image.not-earned {
+        filter: grayscale(100%) opacity(0.3);
+    }
+
+    .badge-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #6c757d;
+    }
+
+    .badge-item.earned .badge-label {
+        color: #28a745;
+        font-weight: 600;
+    }
+  </style>
 </head>
 
 <body>
 
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
-    <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/}">TrailRank</a>
+  <div class="container-fluid">
+    <a class="navbar-brand" th:href="@{/}">TrailRank</a>
 
-        <div class="d-flex">
-            <!-- Search Form -->
-            <form class="d-flex me-3" th:action="@{/trails/search}" method="get">
-                <input type="hidden" name="page" value="1">
-                <div class="input-group search-box">
-                    <input class="form-control"
-                           type="search"
-                           name="query"
-                           th:value="${searchQuery ?: ''}"
-                           placeholder="Search trails...">
-                    <button class="btn btn-outline-light" type="submit">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </form>
+    <div class="d-flex">
+      <form class="d-flex me-3" th:action="@{/trails/search}" method="get">
+        <input type="hidden" name="page" value="1">
+        <div class="input-group search-box">
+          <input class="form-control"
+                 type="search"
+                 name="query"
+                 th:value="${searchQuery ?: ''}"
+                 placeholder="Search trails...">
+          <button class="btn btn-outline-light" type="submit">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </form>
 
-            <!-- Auth Section -->
-            <ul class="navbar-nav">
-                <li class="nav-item" th:if="${session.userEmail != null}">
-                    <div class="d-flex align-items-center">
+      <ul class="navbar-nav">
+        <li class="nav-item" th:if="${session.userEmail != null}">
+          <div class="d-flex align-items-center">
                         <span class="text-light me-2">
                             Hello, <span th:text="${session.username}"></span>!
                         </span>
-                        <a th:href="@{/profile}" class="btn btn-link text-light me-2" title="Profile">
-                            <i class="fas fa-user-circle fa-lg"></i>
-                        </a>
-                        <form th:action="@{/logout}" method="post" class="d-inline">
-                            <button class="btn btn-outline-light" type="submit" title="Logout">
-                                <i class="fas fa-sign-out-alt"></i> Logout
-                            </button>
-                        </form>
-                    </div>
-                </li>
-            </ul>
-        </div>
+            <a th:href="@{/profile}" class="btn btn-link text-light me-2" title="Profile">
+              <i class="fas fa-user-circle fa-lg"></i>
+            </a>
+            <form th:action="@{/logout}" method="post" class="d-inline">
+              <button class="btn btn-outline-light" type="submit" title="Logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </button>
+            </form>
+          </div>
+        </li>
+      </ul>
     </div>
+  </div>
 </nav>
 
 <!-- PROFILE CONTENT -->
 <div class="container" th:if="${user != null}">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <!-- Profile Card -->
-            <div class="card profile-card">
-                <div class="profile-header">
-                    <img th:if="${user.profileUrl != null and !#strings.isEmpty(user.profileUrl)}"
-                         th:src="${user.profileUrl}"
-                         class="profile-pic"
-                         alt="Profile Picture">
-                    <div th:unless="${user.profileUrl != null and !#strings.isEmpty(user.profileUrl)}"
-                         class="profile-pic bg-light d-flex align-items-center justify-content-center">
-                        <i class="fas fa-user fa-3x text-muted"></i>
-                    </div>
-                    <h2 th:text="${user.username}">Username</h2>
-                    <p class="mb-0" th:text="${user.email}">Email</p>
-                </div>
-
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <span class="info-label">Followers:</span>
-                            <span th:text="${followerCount != null ? followerCount : 0}">0</span>
-                        </div>
-                        <div class="col-md-6">
-                            <span class="info-label">Following:</span>
-                            <span th:text="${followingCount != null ? followingCount : 0}">0</span>
-                        </div>
-                    </div>
-
-                    <div th:if="${user.bio != null and !#strings.isEmpty(user.bio)}" class="mb-3">
-                        <span class="info-label">Bio:</span>
-                        <p th:text="${user.bio}">Bio text</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Followers Card -->
-            <div class="card relationship-card">
-                <div class="card-header">
-                    <h5 class="mb-0">Followers (<span th:text="${followerCount != null ? followerCount : 0}">0</span>)</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div th:if="${followers == null or followers.empty}" class="p-3 text-center empty-message">
-                        No followers yet
-                    </div>
-                    <div th:each="follower : ${followers}" class="user-list-item">
-                        <img th:if="${follower.profileUrl != null and !#strings.isEmpty(follower.profileUrl)}"
-                             th:src="${follower.profileUrl}"
-                             class="user-avatar"
-                             alt="Avatar">
-                        <div th:unless="${follower.profileUrl != null and !#strings.isEmpty(follower.profileUrl)}"
-                             class="user-avatar bg-secondary d-flex align-items-center justify-content-center">
-                            <i class="fas fa-user text-white"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div th:text="${follower.username}">Username</div>
-                            <small class="text-muted" th:text="${follower.email}">Email</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Following Card -->
-            <div class="card relationship-card">
-                <div class="card-header">
-                    <h5 class="mb-0">Following (<span th:text="${followingCount != null ? followingCount : 0}">0</span>)</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div th:if="${following == null or following.empty}" class="p-3 text-center empty-message">
-                        Not following anyone yet
-                    </div>
-                    <div th:each="followed : ${following}" class="user-list-item">
-                        <img th:if="${followed.profileUrl != null and !#strings.isEmpty(followed.profileUrl)}"
-                             th:src="${followed.profileUrl}"
-                             class="user-avatar"
-                             alt="Avatar">
-                        <div th:unless="${followed.profileUrl != null and !#strings.isEmpty(followed.profileUrl)}"
-                             class="user-avatar bg-secondary d-flex align-items-center justify-content-center">
-                            <i class="fas fa-user text-white"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div th:text="${followed.username}">Username</div>
-                            <small class="text-muted" th:text="${followed.email}">Email</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Suggested Users Card -->
-            <div class="card relationship-card" th:if="${suggestedUsers != null and !suggestedUsers.empty}">
-                <div class="card-header">
-                    <h5 class="mb-0">Suggested Users</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div th:each="suggested : ${suggestedUsers}" class="user-list-item">
-                        <img th:if="${suggested.profileUrl != null and !#strings.isEmpty(suggested.profileUrl)}"
-                             th:src="${suggested.profileUrl}"
-                             class="user-avatar"
-                             alt="Avatar">
-                        <div th:unless="${suggested.profileUrl != null and !#strings.isEmpty(suggested.profileUrl)}"
-                             class="user-avatar bg-secondary d-flex align-items-center justify-content-center">
-                            <i class="fas fa-user text-white"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div th:text="${suggested.username}">Username</div>
-                            <small class="text-muted" th:text="${suggested.email}">Email</small>
-                        </div>
-                        <button class="btn btn-primary btn-sm btn-follow"
-                                th:attr="data-user-id=${suggested.userId}"
-                                onclick="followUser(this)">
-                            Follow
-                        </button>
-                    </div>
-                </div>
-            </div>
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <!-- Profile Card -->
+      <div class="card profile-card">
+        <div class="profile-header">
+          <img th:if="${user.profileUrl != null and !#strings.isEmpty(user.profileUrl)}"
+               th:src="${user.profileUrl}"
+               class="profile-pic"
+               alt="Profile Picture">
+          <div th:unless="${user.profileUrl != null and !#strings.isEmpty(user.profileUrl)}"
+               class="profile-pic bg-light d-flex align-items-center justify-content-center">
+            <i class="fas fa-user fa-3x text-muted"></i>
+          </div>
+          <h2 th:text="${user.username}">Username</h2>
+          <p class="mb-0" th:text="${user.email}">Email</p>
         </div>
+
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <span class="info-label">Followers:</span>
+              <span th:text="${followerCount != null ? followerCount : 0}">0</span>
+            </div>
+            <div class="col-md-6">
+              <span class="info-label">Following:</span>
+              <span th:text="${followingCount != null ? followingCount : 0}">0</span>
+            </div>
+          </div>
+
+          <div th:if="${user.bio != null and !#strings.isEmpty(user.bio)}" class="mb-3">
+            <span class="info-label">Bio:</span>
+            <p th:text="${user.bio}">Bio text</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Distance Card -->
+      <div class="stats-card text-center">
+        <h3 th:text="${totalDistance != null ? #numbers.formatDecimal(totalDistance, 1, 2) : '0.00'}">0.00</h3>
+        <p>Total Kilometers Hiked</p>
+      </div>
+
+      <!-- Badges Card -->
+      <div class="card relationship-card">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fas fa-trophy text-warning"></i> Achievements
+          </h5>
+        </div>
+        <div class="badges-grid">
+          <div th:each="badge : ${badges}"
+               class="badge-item"
+               th:classappend="${badge.earned ? 'earned' : ''}">
+            <img th:src="@{'/images/badges/' + ${badge.imageName}}"
+                 th:class="${badge.earned ? 'badge-image' : 'badge-image not-earned'}"
+                 th:alt="${badge.threshold + ' km'}">
+            <div class="badge-label" th:text="${badge.threshold + ' km'}">10 km</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Followers Card -->
+      <div class="card relationship-card">
+        <div class="card-header">
+          <h5 class="mb-0">Followers (<span th:text="${followerCount != null ? followerCount : 0}">0</span>)</h5>
+        </div>
+        <div class="card-body p-0">
+          <div th:if="${followers == null or followers.empty}" class="p-3 text-center empty-message">
+            No followers yet
+          </div>
+          <div th:each="follower : ${followers}" class="user-list-item">
+            <img th:if="${follower.profileUrl != null and !#strings.isEmpty(follower.profileUrl)}"
+                 th:src="${follower.profileUrl}"
+                 class="user-avatar"
+                 alt="Avatar">
+            <div th:unless="${follower.profileUrl != null and !#strings.isEmpty(follower.profileUrl)}"
+                 class="user-avatar bg-secondary d-flex align-items-center justify-content-center">
+              <i class="fas fa-user text-white"></i>
+            </div>
+            <div class="flex-grow-1">
+              <div th:text="${follower.username}">Username</div>
+              <small class="text-muted" th:text="${follower.email}">Email</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Following Card -->
+      <div class="card relationship-card">
+        <div class="card-header">
+          <h5 class="mb-0">Following (<span th:text="${followingCount != null ? followingCount : 0}">0</span>)</h5>
+        </div>
+        <div class="card-body p-0">
+          <div th:if="${following == null or following.empty}" class="p-3 text-center empty-message">
+            Not following anyone yet
+          </div>
+          <div th:each="followed : ${following}" class="user-list-item">
+            <img th:if="${followed.profileUrl != null and !#strings.isEmpty(followed.profileUrl)}"
+                 th:src="${followed.profileUrl}"
+                 class="user-avatar"
+                 alt="Avatar">
+            <div th:unless="${followed.profileUrl != null and !#strings.isEmpty(followed.profileUrl)}"
+                 class="user-avatar bg-secondary d-flex align-items-center justify-content-center">
+              <i class="fas fa-user text-white"></i>
+            </div>
+            <div class="flex-grow-1">
+              <div th:text="${followed.username}">Username</div>
+              <small class="text-muted" th:text="${followed.email}">Email</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suggested Users Card -->
+      <div class="card relationship-card" th:if="${suggestedUsers != null and !suggestedUsers.empty}">
+        <div class="card-header">
+          <h5 class="mb-0">Suggested Users</h5>
+        </div>
+        <div class="card-body p-0">
+          <div th:each="suggested : ${suggestedUsers}" class="user-list-item">
+            <img th:if="${suggested.profileUrl != null and !#strings.isEmpty(suggested.profileUrl)}"
+                 th:src="${suggested.profileUrl}"
+                 class="user-avatar"
+                 alt="Avatar">
+            <div th:unless="${suggested.profileUrl != null and !#strings.isEmpty(suggested.profileUrl)}"
+                 class="user-avatar bg-secondary d-flex align-items-center justify-content-center">
+              <i class="fas fa-user text-white"></i>
+            </div>
+            <div class="flex-grow-1">
+              <div th:text="${suggested.username}">Username</div>
+              <small class="text-muted" th:text="${suggested.email}">Email</small>
+            </div>
+            <button class="btn btn-primary btn-sm btn-follow"
+                    th:attr="data-user-id=${suggested.userId}"
+                    onclick="followUser(this)">
+              Follow
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <div class="container" th:if="${user == null}">
-    <div class="alert alert-danger mt-5">
-        <h4>Error</h4>
-        <p>User not found. Please try logging in again.</p>
-        <a href="/login" class="btn btn-primary">Go to Login</a>
-    </div>
+  <div class="alert alert-danger mt-5">
+    <h4>Error</h4>
+    <p>User not found. Please try logging in again.</p>
+    <a href="/login" class="btn btn-primary">Go to Login</a>
+  </div>
 </div>
 
 <script th:inline="javascript">
-    const currentUserId = [[${session.userId}]];
+  const currentUserId = [[${session.userId}]];
 </script>
 
 <script>
-    function followUser(button) {
-        const followedId = button.getAttribute('data-user-id');
-        if (!followedId) {
-            alert('Invalid user ID');
-            return;
-        }
+  function followUser(button) {
+      const followedId = button.getAttribute('data-user-id');
+      if (!followedId) {
+          alert('Invalid user ID');
+          return;
+      }
 
-        fetch(`/profile/follow/${followedId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                button.textContent = 'Following';
-                button.classList.remove('btn-primary');
-                button.classList.add('btn-secondary', 'btn-following');
-                button.disabled = true;
-                alert('Successfully followed user!');
-            } else {
-                alert('Error: ' + (data.message || 'Failed to follow user'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to follow user');
-        });
-    }
+      fetch(`/profile/follow/${followedId}`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          }
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.status === 'success') {
+              button.textContent = 'Following';
+              button.classList.remove('btn-primary');
+              button.classList.add('btn-secondary', 'btn-following');
+              button.disabled = true;
+              alert('Successfully followed user!');
+          } else {
+              alert('Error: ' + (data.message || 'Failed to follow user'));
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          alert('Failed to follow user');
+      });
+  }
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

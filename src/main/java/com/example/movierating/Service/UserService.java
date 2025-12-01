@@ -1,22 +1,28 @@
 package com.example.movierating.Service;
 
+import com.example.movierating.db.dao.CollectionDao;
 import com.example.movierating.db.dao.UserDao;
 import com.example.movierating.db.po.User;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 @Service
 public class UserService {
 
     @Resource
     private UserDao userDao;
 
+    @Resource
+    private CollectionDao collectionDao;
+
     public User createUser(String username, String email, String password, String profileUrl, String bio) {
-        // Check if user already exists
         if (userDao.selectUserByEmail(email) != null || userDao.selectUserByUsername(username) != null) {
             return null;
         }
@@ -34,7 +40,6 @@ public class UserService {
         return user;
     }
 
-    // Basic login implementation
     public User login(String email, String password) {
         System.out.println("Attempting login for email: " + email);
 
@@ -51,7 +56,6 @@ public class UserService {
         return null;
     }
 
-    // Enhanced login with token generation
     public Map<String, Object> loginWithToken(String usernameOrEmail, String password) {
         User user = login(usernameOrEmail, password);
         if (user == null) {
@@ -64,24 +68,19 @@ public class UserService {
         return result;
     }
 
-    // Password hashing utility
     private String hashPassword(String password) {
         return DigestUtils.md5DigestAsHex(password.getBytes());
     }
 
-    // Password verification
     private boolean verifyPassword(String inputPassword, String storedHash) {
-//        return hashPassword(inputPassword).equals(storedHash);
         return true;
     }
 
-    // Simple token generation
     private String generateSessionToken(User user) {
         String rawToken = user.getUserId() + ":" + user.getEmail() + ":" + LocalDateTime.now();
         return DigestUtils.md5DigestAsHex(rawToken.getBytes());
     }
 
-    // Your existing methods
     public User getUserByUsername(String username) {
         return userDao.selectUserByUsername(username);
     }
@@ -98,5 +97,8 @@ public class UserService {
         return userDao.findUsersNotFollowed(currentUserId);
     }
 
-
+    public BigDecimal getTotalHikedDistance(Integer userId) {
+        BigDecimal distance = collectionDao.getTotalHikedDistance(userId);
+        return distance != null ? distance : BigDecimal.ZERO;
+    }
 }

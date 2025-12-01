@@ -86,16 +86,16 @@
               </button>
               <button th:if="${collectionType == 'Wish-to-Hike'}"
                       class="btn btn-success"
-                      th:onclick="'addToCollection(' + ${trail.trailId} + ', \'Hiked\')'">
+                      th:onclick="'addToCollection(' + ${trail.trailId} + ', \'Completed\')'">
                 <i class="fas fa-check-circle"></i> Mark as Hiked
               </button>
 
-              <button th:if="${collectionType == 'Hiked'}"
+              <button th:if="${collectionType == 'Completed'}"
                       class="btn btn-outline-success"
-                      th:onclick="'addToCollection(' + ${trail.trailId} + ', \'Hiked\')'">
+                      th:onclick="'addToCollection(' + ${trail.trailId} + ', \'Completed\')'">
                 <i class="fas fa-check-circle"></i> Hiked
               </button>
-              <button th:if="${collectionType == 'Hiked'}"
+              <button th:if="${collectionType == 'Completed'}"
                       class="btn btn-primary"
                       th:onclick="'addToCollection(' + ${trail.trailId} + ', \'Wish-to-Hike\')'">
                 <i class="fas fa-heart"></i> Move to Wish List
@@ -109,7 +109,7 @@
                 <i class="fas fa-heart"></i> Add to Wish List
               </button>
               <button class="btn btn-success"
-                      th:onclick="'addToCollection(' + ${trail.trailId} + ', \'Hiked\')'">
+                      th:onclick="'addToCollection(' + ${trail.trailId} + ', \'Completed\')'">
                 <i class="fas fa-check-circle"></i> Mark as Hiked
               </button>
             </div>

@@ -14,7 +14,6 @@
     collection_id, user_id, trail_id, collection_type, create_date, update_date
   </sql>
 
-  <!-- Select by Primary Key -->
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
@@ -22,7 +21,6 @@
     where collection_id = #{collectionId,jdbcType=INTEGER}
   </select>
 
-  <!-- Insert Selective -->
   <insert id="insertSelective" parameterType="com.example.movierating.db.po.Collection">
     insert into `Collection`
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -67,7 +65,6 @@
     </trim>
   </insert>
 
-  <!-- Update by Primary Key Selective -->
   <update id="updateByPrimaryKeySelective" parameterType="com.example.movierating.db.po.Collection">
     update `Collection`
     <set>
@@ -90,7 +87,6 @@
     where collection_id = #{collectionId,jdbcType=INTEGER}
   </update>
 
-  <!-- Select by User ID -->
   <select id="selectByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
@@ -99,7 +95,6 @@
     order by create_date desc
   </select>
 
-  <!-- Select by User ID and Trail ID -->
   <select id="selectByUserIdAndTrailId" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
@@ -107,18 +102,24 @@
     where user_id = #{userId,jdbcType=INTEGER} and trail_id = #{trailId,jdbcType=INTEGER}
   </select>
 
-  <!-- Delete by User ID and Trail ID -->
   <delete id="deleteByUserIdAndTrailId">
     delete from `Collection`
     where user_id = #{userId,jdbcType=INTEGER} and trail_id = #{trailId,jdbcType=INTEGER}
   </delete>
-  
-  <!-- Select by User ID and Collection Type -->
+
   <select id="selectByUserIdAndType" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from `Collection`
     where user_id = #{userId,jdbcType=INTEGER} and collection_type = #{collectionType,jdbcType=CHAR}
     order by create_date desc
+  </select>
+
+  <select id="getTotalHikedDistance" parameterType="java.lang.Integer" resultType="java.math.BigDecimal">
+    SELECT COALESCE(SUM(t.distance), 0) as total_distance
+    FROM `Collection` c
+    JOIN Trail t ON c.trail_id = t.trail_id
+    WHERE c.user_id = #{userId,jdbcType=INTEGER}
+    AND c.collection_type = 'Completed'
   </select>
 </mapper>

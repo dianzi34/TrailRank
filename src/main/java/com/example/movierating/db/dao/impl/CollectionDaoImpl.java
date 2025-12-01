@@ -6,6 +6,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,12 +49,18 @@ public class CollectionDaoImpl implements CollectionDao {
         params.put("trailId", trailId);
         return sqlSession.delete("com.example.movierating.db.mappers.CollectionMapper.deleteByUserIdAndTrailId", params);
     }
-    
+
     @Override
     public List<Collection> getCollectionsByUserIdAndType(Integer userId, String collectionType) {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
         params.put("collectionType", collectionType);
         return sqlSession.selectList("com.example.movierating.db.mappers.CollectionMapper.selectByUserIdAndType", params);
+    }
+
+    @Override
+    public BigDecimal getTotalHikedDistance(Integer userId) {
+        BigDecimal result = sqlSession.selectOne("com.example.movierating.db.mappers.CollectionMapper.getTotalHikedDistance", userId);
+        return result != null ? result : BigDecimal.ZERO;
     }
 }

@@ -6,23 +6,15 @@ import java.util.Date;
 public class Trail {
 
     private Integer trailId;
-
     private String name;
-
     private String location;
-
-    private String difficulty;  // easy, moderate, hard
-
-    private String scenery;  // lake, mountain, forest, desert, etc.
-
-    private BigDecimal distance;  // in kilometers
-
-    private String imageUrl;  // renamed from posterUrl
-
+    private String difficulty;
+    private String scenery;
+    private BigDecimal distance;
+    private String imageUrl;
+    private String mapImage;
     private Date createDate;
-
     private Date updateDate;
-
     private String description;
 
     public Integer getTrailId() {
@@ -81,6 +73,14 @@ public class Trail {
         this.imageUrl = imageUrl == null ? null : imageUrl.trim();
     }
 
+    public String getMapImage() {
+        return mapImage;
+    }
+
+    public void setMapImage(String mapImage) {
+        this.mapImage = mapImage == null ? null : mapImage.trim();
+    }
+
     public Date getCreateDate() {
         return createDate;
     }
@@ -105,5 +105,3 @@ public class Trail {
         this.description = description == null ? null : description.trim();
     }
 }
-
-
