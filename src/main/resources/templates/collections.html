@@ -58,10 +58,15 @@
               <small class="text-muted" th:text="${trail.scenery} ?: 'Category not specified'"></small><br>
               <span th:text="${trail.distance != null ? trail.distance + ' km' : 'Distance unknown'}"></span>
             </p>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between flex-wrap gap-2">
               <a th:href="@{/trails/{trailId}(trailId=${trail.trailId})}"
                  class="btn btn-primary btn-sm">
                 Details
+              </a>
+              <a th:href="@{/api/pdf/trails/{trailId}(trailId=${trail.trailId})}"
+                 class="btn btn-outline-success btn-sm"
+                 download>
+                <i class="fas fa-download"></i> PDF
               </a>
               <button class="btn btn-outline-danger btn-sm"
                       th:attr="data-trail-id=${trail.trailId}"
@@ -108,10 +113,15 @@
               <small class="text-muted" th:text="${trail.scenery} ?: 'Category not specified'"></small><br>
               <span th:text="${trail.distance != null ? trail.distance + ' km' : 'Distance unknown'}"></span>
             </p>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between flex-wrap gap-2">
               <a th:href="@{/trails/{trailId}(trailId=${trail.trailId})}"
                  class="btn btn-primary btn-sm">
                 Details
+              </a>
+              <a th:href="@{/api/pdf/trails/{trailId}(trailId=${trail.trailId})}"
+                 class="btn btn-outline-success btn-sm"
+                 download>
+                <i class="fas fa-download"></i> PDF
               </a>
               <button class="btn btn-outline-danger btn-sm"
                       th:attr="data-trail-id=${trail.trailId}"

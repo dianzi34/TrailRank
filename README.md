@@ -14,6 +14,7 @@ TrailRank helps outdoor enthusiasts discover trails, track their hiking progress
 - **Reviews & Ratings**: Rate trails (1-10 scale) and share experiences with the community
 - **User Profiles**: Follow other users, view followers and following lists
 - **Social Features**: Build connections with other hikers
+- **PDF Export**: Download trail guides as PDF files for offline use
 
 ## 🛠️ Tech Stack
 
@@ -21,6 +22,7 @@ TrailRank helps outdoor enthusiasts discover trails, track their hiking progress
 - **Backend**: Java (Spring Boot)
 - **Database**: MySQL
 - **AI Tools**: OpenAI API
+- **PDF Generation**: Apache PDFBox
 
 ## 🚀 Quick Start
 
@@ -55,18 +57,7 @@ Enter your MySQL root password when prompted.
 ./mvnw spring-boot:run
 ```
 
-6. Access at `http://localhost:8082`
 
-## 👥 Team & Responsibilities
-
-**CS5500 Fall 2025 - Team 11**
-
-| Member | Responsibilities |
-|--------|-----------------|
-| **Xinyu Li** | User Authentication & Profile Management, Security Implementation |
-| **Hailey Pang** | Trail Catalog & Search Functionality, Database Design |
-| **Xueyan Zhang** | Ratings & Reviews System, Frontend UI/UX |
-| **Yi Zhang** | Collections & Progress Tracking, PDF Export Feature |
 
 ## 📅 Project Timeline
 
@@ -76,6 +67,3 @@ Enter your MySQL root password when prompted.
 - **Week 7**: Collections & Progress Tracking
 - **Week 8**: Integration & Testing
 
-## 📝 License
-
-This project is developed for educational purposes as part of CS5500 coursework.
